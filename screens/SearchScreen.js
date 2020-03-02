@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useReducer} from 'react';
-import { View, Text, ScrollView, StyleSheet, FlatList, TextInput } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native';
 import Search from '../components/Search'
 import Product from '../components/Product';
 import data from '../screens/data.json'
@@ -9,9 +9,8 @@ import Loader from '../components/Loader'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
-export default function HomeScreen(props) { 
-  
-  
+export default function SearchScreen(props) { 
+    
   const [products, dispatch] = useReducer((myArray, { type, value }) => {
     switch (type) {
       case "add":
@@ -23,95 +22,15 @@ export default function HomeScreen(props) {
       default:
         return myArray;
     }
-  }, []);  
-
-  const [productsFounds, dispatchProductsFounds] = useReducer((myArray, { type, value }) => {
-    switch (type) {
-      case "add":
-        return [...myArray, value];
-      case "remove":
-        return myArray.filter((_, index) => index !== value);
-      case "remove":
-        return [];
-      default:
-        return myArray;
-    }
-  }, []);  
+  }, []);    
 
   const [page, setPage]=useState(1);
-  const [pageProductsFounds, setPageProductsFounds]=useState(1);
   const [textInput, setTextInput]= useState('')
   const [startSearch, setStartSearch]=useState(false);
   const [isFetching, setIsFetching]=useState(false)
   const [loading, setLoading]=useState(false)
 
-  const getProducts= async (page) => {
-    setLoading(true)
-    setIsFetching(true)
-    console.log("PAGE",page)
-    try {
-      let request = await fetch(config.endpoint + "/getproducts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          page:page,
-          //limit: items per page
-	        limit:1
-        })
-      });
-
-      const response = await request.json();
-      console.log("AQUI",response.docs)
-      if (request.status === 200) {
-        if (response.error) {
-          setLoading(false )
-          Toast.show(response.error.message, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0
-          });
-          return;
-        } else {
-          setLoading(false)
-          await setPage(page+1)
-          response.docs.forEach(element => {
-            dispatch({type:"add", value:element})
-          });
-          
-          console.log("PRODUCTOS",products)
-        }
-      } else {
-        setLoading(false)
-        Toast.show(response.error.message, {
-          duration: Toast.durations.LONG,
-          position: Toast.positions.BOTTOM,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 0
-        });
-      }
-    } catch (error) {
-      console.log(error)
-      setLoading(false)
-      Toast.show("Problemas al enviar o recibir los datos", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-    }
-    setIsFetching(false)
-  };
-
-  const findProducts=async (page)=>{
+  const getProducts=async (page)=>{
     setLoading(true)
     setIsFetching(true)
     console.log("BUSCANDOOOOOOOOOO")
@@ -179,8 +98,7 @@ export default function HomeScreen(props) {
   }
 
   useEffect(()=>{getProducts(page)},[])
-  useEffect(()=>{findProducts(page)},[])
-  console.log("setStartSearch",startSearch)
+
   return (
     <View style={styles.container}>
       <View style={styles.search}>
@@ -189,36 +107,13 @@ export default function HomeScreen(props) {
             console.log("Buscar:",start)
             setStartSearch(start)
           }}
-          goBack={()=>{setStartSearch(false)}}
+          goBack={()=>setStartSearch(false)}
           arrowBack={startSearch? true:false}
           onChangeText={(text) => setTextInput(text)}
-          setText={textInput}
         />
       </View>
-      <TextInput
-            style={styles.input}
-            onChangeText={(text) => setTextInput(text)}
-            placeholder={'Buscar producto'}
-            placeholderTextColor="#a4a4a4"
-            onSubmitEditing={}                        
-            onKeyPress={ (event) => {
-                if(event.nativeEvent.key == "Enter"){
-                    //console.log(event.nativeEvent.key) //called when multiline is true
-                    // this.signIn();
-                } 
-                else {
-                    //console.log('Something else Pressed') 
-                }
-            }}
-        />
         <FlatList
-          data={ 
-            !startSearch===true? 
-              products[0]!=={}? products
-                : null
-              :productsFounds[0]!=={}? products
-                : null 
-          }
+          data={products[0]!=={}? products: null}
           horizontal={false}
           renderItem={ (item) => 
             <Product 
@@ -228,11 +123,7 @@ export default function HomeScreen(props) {
             />
           }
           keyExtractor={item=> item._id}
-          onEndReached={()=> 
-            !startSearch===true? 
-              getProducts(page)
-                : findProducts(pageProductsFounds) 
-          }
+          onEndReached={()=> getProducts(page)}
           onEndReachedThreshold={0}
         />
       <Loader
@@ -242,7 +133,7 @@ export default function HomeScreen(props) {
     )
 }
 
-HomeScreen.navigationOptions = {
+SearchScreen.navigationOptions = {
   header: null,
 };
 const styles= StyleSheet.create({

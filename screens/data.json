@@ -1,0 +1,34 @@
+{
+    "items":[
+        {
+          "id":1,
+          "name":"Salsa",
+          "price": "1234"
+        },
+        {
+          "id":2,
+          "name":"Mayonesa",
+          "price": "456"
+        },
+        {
+          "id":3,
+          "name":"Mostaza",
+          "price": "789"
+        },
+        {
+          "id":4,
+          "name":"Oreo",
+          "price": "012"
+        },
+        {
+          "id":5,
+          "name":"Fructus",
+          "price": "345"
+        },
+        {
+          "id":6,
+          "name":"Adobo",
+          "price": "678"
+        }
+    ]
+}
