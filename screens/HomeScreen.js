@@ -1,5 +1,5 @@
 import React,{useState, useEffect, useReducer} from 'react';
-import { View, Text, ScrollView, StyleSheet, FlatList, TextInput } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, FlatList, TextInput,AsyncStorage } from 'react-native';
 import Search from '../components/Search'
 import Product from '../components/Product';
 import data from '../screens/data.json'
@@ -18,25 +18,12 @@ export default function HomeScreen(props) {
         return [...myArray, value];
       case "remove":
         return myArray.filter((_, index) => index !== value);
-      case "remove":
+      case "removeAll":
         return [];
       default:
         return myArray;
     }
-  }, []);  
-
-  const [productsFounds, dispatchProductsFounds] = useReducer((myArray, { type, value }) => {
-    switch (type) {
-      case "add":
-        return [...myArray, value];
-      case "remove":
-        return myArray.filter((_, index) => index !== value);
-      case "remove":
-        return [];
-      default:
-        return myArray;
-    }
-  }, []);  
+  }, []);    
 
   const [page, setPage]=useState(1);
   const [pageProductsFounds, setPageProductsFounds]=useState(1);
@@ -115,7 +102,6 @@ export default function HomeScreen(props) {
     setLoading(true)
     setIsFetching(true)
     console.log("BUSCANDOOOOOOOOOO")
-    console.log(productsFounds)
 
     try {
       let request = await fetch(config.endpoint + "/findproducts", {
@@ -149,7 +135,7 @@ export default function HomeScreen(props) {
           await setPageProductsFounds(page+1)
           console.log(response)
           response.docs.forEach(element => {
-            dispatchProductsFounds({type:"add", value:element})
+            dispatch({type:"add", value:element})
           });          
         }
       } else {
@@ -179,51 +165,48 @@ export default function HomeScreen(props) {
   }
 
   useEffect(()=>{getProducts(page)},[])
-  useEffect(()=>{findProducts(page)},[])
+
   console.log("setStartSearch",startSearch)
+  
+  const getFindData=async(start)=>{
+    console.log("Buscar:",start)
+    console.log(await AsyncStorage.getItem('token'));
+    if(start===true){
+      await setStartSearch(start)
+      await setPage(1)
+      await dispatch({type:"removeAll", value:{}})
+      findProducts(pageProductsFounds)
+    }
+  }
+
+  const backToDash=async ()=>{
+    await setPageProductsFounds(1)
+    await setStartSearch(false);
+    await setTextInput('');
+    await dispatch({type:"removeAll", value:{}})
+    getProducts(page)
+  }
   return (
     <View style={styles.container}>
       <View style={styles.search}>
         <Search
-          startSearch={(start)=> {
-            console.log("Buscar:",start)
-            setStartSearch(start)
-          }}
-          goBack={()=>{setStartSearch(false)}}
+          startSearch={(start)=> getFindData(start)}
+          goBack={()=> backToDash()}
           arrowBack={startSearch? true:false}
           onChangeText={(text) => setTextInput(text)}
           setText={textInput}
         />
       </View>
-      <TextInput
-            style={styles.input}
-            onChangeText={(text) => setTextInput(text)}
-            placeholder={'Buscar producto'}
-            placeholderTextColor="#a4a4a4"
-            onKeyPress={ (event) => {
-                if(event.nativeEvent.key == "Enter"){
-                    //console.log(event.nativeEvent.key) //called when multiline is true
-                    // this.signIn();
-                } 
-                else {
-                    //console.log('Something else Pressed') 
-                }
-            }}
-        />
         <FlatList
-          data={ 
-            !startSearch===true? 
-              products[0]!=={}? products
-                : null
-              :productsFounds[0]!=={}? products
-                : null 
-          }
+          data={ products[0]!=={}? products : null }
           horizontal={false}
           renderItem={ (item) => 
             <Product 
               name={item.item.name} 
               price={item.item.price}
               image={item.item.image}
+              id={item.item.id}
+              addMore={false}
             />
           }
           keyExtractor={item=> item._id}

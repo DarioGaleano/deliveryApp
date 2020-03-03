@@ -1,7 +1,91 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image, AsyncStorage } from "react-native";
+import config from '../config/'
+import Loader from '../components/Loader'
+import Toast from "react-native-root-toast";
+import {Ionicons} from '@expo/vector-icons'
+import Colors from '../constants/Colors';
 
 export default function Product(props) {
+    const [loading, setLoading]=useState(false)
+    const [count, setCont]=useState(1);
+    const addToShoppingCart=async ()=>{
+        await setLoading(true)
+        console.log("TOKEEEN",await AsyncStorage.getItem("token"))
+        let product = {
+            name: props.name,
+            id: props.id,
+            image: props.image,
+            price:props.price
+        }
+        AsyncStorage.getItem('products')
+          .then((products) => {
+            const c = products ? JSON.parse(products) : [];
+            c.push(product);
+            AsyncStorage.setItem('products', JSON.stringify(c));
+          });
+        try {
+            let request = await fetch(config.endpoint + "/addproductshoppingcart", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + (await AsyncStorage.getItem("token"))
+              },
+              body: JSON.stringify({
+                product:props.id,
+	            quantity: 1
+              })
+            });
+      
+            const response = await request.json();
+            console.log("AQUI",response)
+            if (request.status === 200) {
+              if (response.error) {
+                setLoading(false)
+                Toast.show(response.error.message, {
+                  duration: Toast.durations.LONG,
+                  position: Toast.positions.BOTTOM,
+                  shadow: true,
+                  animation: true,
+                  hideOnPress: true,
+                  delay: 0
+                });
+                return;
+              } else {
+                setLoading(false) 
+                Toast.show("Añadido a tu carrito con exito", {
+                    duration: Toast.durations.LONG,
+                    position: Toast.positions.BOTTOM,
+                    shadow: true,
+                    animation: true,
+                    hideOnPress: true,
+                    delay: 0
+                  });               
+              }
+            } else {
+              setLoading(false)
+              Toast.show(response.error.message, {
+                duration: Toast.durations.LONG,
+                position: Toast.positions.BOTTOM,
+                shadow: true,
+                animation: true,
+                hideOnPress: true,
+                delay: 0
+              });
+            }
+          } catch (error) {
+            console.log(error)
+            setLoading(false)
+            Toast.show("Problemas al enviar o recibir los datos", {
+              duration: Toast.durations.LONG,
+              position: Toast.positions.BOTTOM,
+              shadow: true,
+              animation: true,
+              hideOnPress: true,
+              delay: 0
+            });
+          }
+        };
     return (
         <TouchableOpacity style={styles.container} activeOpacity={0.9}>
             <View style={{width: '40%',height: '100%', justifyContent:'center', alignItems:'center'}}>
@@ -16,11 +100,52 @@ export default function Product(props) {
                 <Text>{props.name}</Text>
                 <Text>Precio: {props.price}</Text>
                 <View style={{width: '100%',height:'30%', justifyContent: 'center'}}>
-                <TouchableOpacity style={styles.buttom}>
-                    <Text>Añadir</Text>
-                </TouchableOpacity>
+                  {
+                    props.addMore?
+                    <View style={{width:'100%', height:'80%', flexDirection:'row'}}>
+                      <View style={{width:'30%',justifyContent:'center', alignItems: 'center'}} onPress={addToShoppingCart}>
+                        {
+                          count===1?
+                          <TouchableOpacity onPress={()=>props.remove(props.id)}>
+                            <Ionicons
+                              name={"ios-trash"}
+                              size={30}
+                              color={"gray"}  
+                            />
+                          </TouchableOpacity>
+                          
+                          :
+                          <TouchableOpacity onPress={()=>setCont(count-1)}>
+                            <Ionicons
+                              name={"ios-remove"}
+                              size={30}
+                              color={"gray"}  
+                            />
+                          </TouchableOpacity>
+                          
+                        }
+                      </View>
+                      <View style={{width:'40%', alignItems:'center', justifyContent:'center'}}>
+                        <Text style={{fontSize:20}}>{count}</Text>
+                      </View>
+                      <TouchableOpacity style={{width:'30%',alignItems:'center', justifyContent:'center'}} onPress={()=> setCont(count+1)}>
+                        <Ionicons
+                          name={"ios-add"}
+                          size={30}
+                          color={"gray"}  
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    :
+                    <TouchableOpacity style={styles.buttom} onPress={addToShoppingCart}>
+                        <Text style={{color:'white', fontWeight:'bold'}}>Añadir</Text>
+                    </TouchableOpacity>
+                  }
+                </View>
             </View>
-            </View>
+            <Loader
+                loading={loading}
+            />
         </TouchableOpacity>
     )
 }
@@ -48,7 +173,7 @@ const styles= StyleSheet.create({
 
     },
     buttom:{
-        backgroundColor: '#fbd30a',
+        backgroundColor: Colors.tabIconSelected,
         width: '100%',
         height: '60%',
         justifyContent: 'center',

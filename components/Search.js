@@ -25,6 +25,7 @@ export default function SearchBar(props){
             style={styles.input}
             onChangeText={(text) => props.onChangeText(text)}
             placeholder={'Buscar producto'}
+            value={props.setText}
             placeholderTextColor="#a4a4a4"
             onSubmitEditing={()=>props.startSearch(true)}                        
             onKeyPress={ (event) => {
