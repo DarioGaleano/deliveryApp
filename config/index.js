@@ -1,5 +1,5 @@
 const config = {
-    endpoint: 'http://192.168.0.104:8000/api/v1'
+    endpoint: 'https://infinite-citadel-83328.herokuapp.com/'
 }
 
 export default config

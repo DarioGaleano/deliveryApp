@@ -200,7 +200,6 @@ export default function HomeScreen(props) {
             onChangeText={(text) => setTextInput(text)}
             placeholder={'Buscar producto'}
             placeholderTextColor="#a4a4a4"
-            onSubmitEditing={}                        
             onKeyPress={ (event) => {
                 if(event.nativeEvent.key == "Enter"){
                     //console.log(event.nativeEvent.key) //called when multiline is true
