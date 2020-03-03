@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, AsyncStorage, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-root-toast";
@@ -6,6 +6,7 @@ import config from "../../config/index";
 import { StackActions } from "react-navigation";
 import Loader from "../../components/Loader";
 import Modal from "react-native-modal";
+import Colors from '../../constants/Colors'
 
 function RenderButton(props)
 {
@@ -131,8 +132,9 @@ function RenderModalContent (props)
   )
 };
 
-export default function LoginScreen(props){
 
+export default function LoginScreen(props){
+  
   const [user, setUser]=useState('')
   const [password, setPassword]=useState('')
   const [loading, setLoading]=useState(false)
@@ -201,7 +203,9 @@ export default function LoginScreen(props){
         } else {
           setLoading(false)
           await AsyncStorage.setItem("token", response.token);
-          Toast.show("Bienvenido Sr(a).  " + response.name, {
+          console.log(response)
+          
+          Toast.show("Bienvenido Sr(a).  " + response.user.name, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
             shadow: true,
@@ -209,8 +213,7 @@ export default function LoginScreen(props){
             hideOnPress: true,
             delay: 0
           });
-          props.navigation.dispatch(StackActions.popToTop());
-          props.navigation.navigate("home");
+          props.navigation.navigate("App");
         }
       } else {
         setLoading(false)
@@ -364,7 +367,7 @@ export default function LoginScreen(props){
 LoginScreen.navigationOptions = ({ navigation }) => ({
   title: "Iniciar Sesion",
   headerStyle: {
-    backgroundColor: "rgb(26, 23, 152)"
+    backgroundColor: Colors.tabIconSelected
   },
   headerTintColor: "#fff",
   headerTitleStyle: {
@@ -391,7 +394,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fbd30a",
+    backgroundColor: Colors.tabIconSelected,
     borderRadius: 10,
     marginBottom: 5
   },
@@ -400,7 +403,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fbd30a",
+    backgroundColor: Colors.tabIconSelected,
     borderRadius: 10,
     marginTop: 5
   },
@@ -415,7 +418,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontWeight: "bold",
-    color: "blue"
+    color: "white"
   },
   conditionsText: {
     color: "blue",
@@ -473,11 +476,11 @@ const styles = StyleSheet.create({
     height: 60
   },
   loginBtnText: {
-    color: 'blue',
+    color: 'white',
     fontWeight: 'bold'
   },
   resetBtn: {
-    backgroundColor: '#fbd30a',
+    backgroundColor: Colors.tabIconSelected,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",

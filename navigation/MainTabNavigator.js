@@ -2,6 +2,8 @@ import React from 'react';
 import { Platform, TouchableOpacity } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator, createDrawerNavigator } from 'react-navigation';
 import HomeScreen from '../screens/HomeScreen'
+import ShoppingCartScreen from '../screens/ShoppingCartScreen'
+import AccountScreen from '../screens/AccountScreen'
 import DetailsScreen from '../screens/DetailsScreen'
 import TabBarIcon from '../components/TabBarIcon'
 import {View} from 'react-native'
@@ -34,9 +36,8 @@ HomeStack.path = '';
 
 const CartStack = createStackNavigator(
   {
-    home: HomeScreen,
+    cart: ShoppingCartScreen,
     details:  DetailsScreen,
-
   },
   config
 );
@@ -53,8 +54,8 @@ CartStack.path = '';
 
 const AccountStack = createStackNavigator(
   {
+    account: AccountScreen,
     home: HomeScreen,
-    details:  DetailsScreen,
 
   },
   config
@@ -103,7 +104,7 @@ const tabNavigator = createBottomTabNavigator({
     
     tabBarOptions: {
       style: {
-        backgroundColor: 'rgb(26, 23, 152)',
+        backgroundColor: 'default',
 
       },
       showLabel: false,
