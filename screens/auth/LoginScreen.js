@@ -39,21 +39,20 @@ function RenderModalContent (props)
     let params = "email=" + emailReset;
     setSending(true);
     try{
-      const response = await fetch(config.endpoint + "/users/generatetoken", {
+      const request = await fetch(config.endpoint + "/users/generatetoken", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
         body: params
       });
-      const responseJson = await response.json();
+      const response = await request.json();
       console.log(response);
-      console.log(responseJson);
       setLoading(false);
-      switch (response.status) {
+      switch (request.status) {
         case 200: {
-          if (responseJson.code === 201) {
-            Toast.show(responseJson.message, {
+          if (response.code === 201) {
+            Toast.show(response.error, {
               duration: Toast.durations.SHORT,
               position: Toast.positions.BOTTOM,
               shadow: true,
@@ -65,7 +64,7 @@ function RenderModalContent (props)
             props.navigation.navigate("forgot");
           } else {
             setModalVisible(false);
-            Toast.show(responseJson.error.message, {
+            Toast.show(response.error, {
               duration: Toast.durations.SHORT,
               position: Toast.positions.BOTTOM,
               shadow: true,
@@ -80,7 +79,7 @@ function RenderModalContent (props)
         default: {
           setSending(false);
           setLoading(false);
-          Toast.show(responseJson.message, {
+          Toast.show(response.error, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
             animation: true,
@@ -191,7 +190,7 @@ export default function LoginScreen(props){
       if (request.status === 200) {
         if (response.error) {
           setLoading(false )
-          Toast.show(response.error.message, {
+          Toast.show(response.error, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
             shadow: true,
@@ -217,7 +216,7 @@ export default function LoginScreen(props){
         }
       } else {
         setLoading(false)
-        Toast.show(response.error.message, {
+        Toast.show(response.error, {
           duration: Toast.durations.LONG,
           position: Toast.positions.BOTTOM,
           shadow: true,
