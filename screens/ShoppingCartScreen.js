@@ -75,6 +75,7 @@ export default function ShoppinCartScreen(props){
             delay: 0
           });
         }
+        console.log(products)
         setIsFetching(false)
     };
 
@@ -103,10 +104,10 @@ export default function ShoppinCartScreen(props){
           horizontal={false}
           renderItem={ (item) => 
             <Product 
-              name={item.item.name} 
-              price={item.item.price}
-              image={item.item.image}
-              id={item.item.id}
+              name={item.item.product.name} 
+              price={item.item.product.price}
+              image={item.item.product.image}
+              id={item.item._id}
               addMore={true}
             />
           }

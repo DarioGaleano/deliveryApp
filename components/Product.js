@@ -12,18 +12,6 @@ export default function Product(props) {
     const addToShoppingCart=async ()=>{
         await setLoading(true)
         console.log("TOKEEEN",await AsyncStorage.getItem("token"))
-        let product = {
-            name: props.name,
-            id: props.id,
-            image: props.image,
-            price:props.price
-        }
-        AsyncStorage.getItem('products')
-          .then((products) => {
-            const c = products ? JSON.parse(products) : [];
-            c.push(product);
-            AsyncStorage.setItem('products', JSON.stringify(c));
-          });
         try {
             let request = await fetch(config.endpoint + "/addproductshoppingcart", {
               method: "POST",

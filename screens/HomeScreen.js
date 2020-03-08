@@ -48,12 +48,12 @@ export default function HomeScreen(props) {
 	        limit:1
         })
       });
-
+      setLoading(false )
+      setIsFetching(false)
       const response = await request.json();
       console.log("AQUI",response.docs)
       if (request.status === 200) {
         if (response.error) {
-          setLoading(false )
           Toast.show(response.error.message, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
@@ -64,7 +64,6 @@ export default function HomeScreen(props) {
           });
           return;
         } else {
-          setLoading(false)
           await setPage(page+1)
           response.docs.forEach(element => {
             dispatch({type:"add", value:element})
@@ -74,7 +73,7 @@ export default function HomeScreen(props) {
         }
       } else {
         setLoading(false)
-        Toast.show(response.error, {
+        Toast.show(response.error, {      
           duration: Toast.durations.LONG,
           position: Toast.positions.BOTTOM,
           shadow: true,
@@ -85,7 +84,6 @@ export default function HomeScreen(props) {
       }
     } catch (error) {
       console.log(error)
-      setLoading(false)
       Toast.show("Problemas al enviar o recibir los datos", {
         duration: Toast.durations.LONG,
         position: Toast.positions.BOTTOM,
@@ -95,7 +93,6 @@ export default function HomeScreen(props) {
         delay: 0
       });
     }
-    setIsFetching(false)
   };
 
   const findProducts=async (page)=>{
@@ -120,7 +117,6 @@ export default function HomeScreen(props) {
       const response = await request.json();
       if (request.status === 200) {
         if (response.error) {
-          setLoading(false )
           Toast.show(response.error.message, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
@@ -205,7 +201,7 @@ export default function HomeScreen(props) {
               name={item.item.name} 
               price={item.item.price}
               image={item.item.image}
-              id={item.item.id}
+              id={item.item._id}
               addMore={false}
             />
           }
