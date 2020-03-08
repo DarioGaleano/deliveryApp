@@ -64,7 +64,7 @@ export default function Product(props) {
               }
             } else {
               setLoading(false)
-              Toast.show(response.error.message, {
+              Toast.show(response.error, {
                 duration: Toast.durations.LONG,
                 position: Toast.positions.BOTTOM,
                 shadow: true,
