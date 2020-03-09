@@ -25,8 +25,8 @@ export default function Product(props) {
 	            quantity: count
               })
             });
-            setLoading(false)
-
+            await setLoading(false)
+            await setCont(1)
             const response = await request.json();
             console.log("AQUI",response)
             if (request.status === 200) {
@@ -260,7 +260,7 @@ export default function Product(props) {
                       <View style={{width:'30%',justifyContent:'center', alignItems: 'center'}} onPress={addToShoppingCart}>
                         {
                           count===1?null:
-                          <TouchableOpacity onPress={decrementProduct}>
+                          <TouchableOpacity onPress={!props.cart?()=>setCont(count-1):decrementProduct}>
                             <Ionicons
                               name={"ios-remove"}
                               size={30}

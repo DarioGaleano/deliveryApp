@@ -45,7 +45,7 @@ export default function HomeScreen(props) {
         body: JSON.stringify({
           page:page,
           //limit: items per page
-	        limit:1
+	        limit:5
         })
       });
       setLoading(false )
@@ -190,6 +190,9 @@ export default function HomeScreen(props) {
           onChangeText={(text) => setTextInput(text)}
           setText={textInput}
         />
+      </View>
+      <View style={{height:40, width:'100%', borderWidth:1, borderColor:'green'}}>
+
       </View>
         <FlatList
           data={ products[0]!=={}? products : null }
