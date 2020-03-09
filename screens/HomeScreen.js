@@ -97,7 +97,6 @@ export default function HomeScreen(props) {
   const findProducts=async (page)=>{
     setLoading(true)
     setIsFetching(true)
-    console.log("BUSCANDOOOOOOOOOO")
 
     try {
       let request = await fetch(config.endpoint + "/findproducts", {
@@ -156,7 +155,7 @@ export default function HomeScreen(props) {
         delay: 0
       });
     }
-    setIsFetching(false)
+    
   }
 
   useEffect(()=>{getProducts(page)},[])
@@ -201,7 +200,7 @@ export default function HomeScreen(props) {
               price={item.item.price}
               image={item.item.image}
               id={item.item._id}
-              addMore={false}
+              cart={false}
             />
           }
           keyExtractor={item=> item._id}
