@@ -6,8 +6,16 @@ import data from '../screens/data.json'
 import Toast from "react-native-root-toast";
 import config from '../config/'
 import Loader from '../components/Loader'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Badge } from 'react-native-elements';
 
+let index=0;
+const categorys=[
+  { name:"Enlatados", key:index++ },
+  { name:"Licores", key:index++ },
+  { name:"Granos", key:index++},
+  { name:"Refrescos", key:index++}
+
+]
 
 export default function HomeScreen(props) { 
   
@@ -31,7 +39,7 @@ export default function HomeScreen(props) {
   const [startSearch, setStartSearch]=useState(false);
   const [isFetching, setIsFetching]=useState(false)
   const [loading, setLoading]=useState(false)
-
+  const [backgroundBadge, setBackgroundBagde]=useState('green')
   const getProducts= async (page) => {
     setLoading(true)
     setIsFetching(true)
@@ -181,6 +189,7 @@ export default function HomeScreen(props) {
     await dispatch({type:"removeAll", value:{}})
     getProducts(page)
   }
+  
   return (
     <View style={styles.container}>
       <View style={styles.search}>
@@ -192,8 +201,20 @@ export default function HomeScreen(props) {
           setText={textInput}
         />
       </View>
-      <View style={{height:40, width:'100%', borderWidth:1, borderColor:'green'}}>
-
+      <View style={{height:100, width:'100%', paddingVertical:15, alignItems:'center'}}>
+        <FlatList
+            data={ categorys}
+            horizontal={true}
+            renderItem={ (item) => 
+              <Badge 
+                value={item.item.name}
+                status="error"
+                badgeStyle={{width:100, height:50, marginHorizontal:10, backgroundColor:backgroundBadge}}
+                onPress={()=> setBackgroundBagde('red')}
+              />
+            }
+            keyExtractor={item=> item.key}
+          />
       </View>
         <FlatList
           data={ products[0]!=={}? products : null }
@@ -229,12 +250,14 @@ const styles= StyleSheet.create({
   container:{
     flex:1,
     marginHorizontal:10,
+    marginTop:30,
     flexDirection: 'column',
   },
   search:{
     justifyContent: 'center',
     alignItems:'center',
-    height: '15%',
+    height: 40,
+    
     
   },
   viewText:{
