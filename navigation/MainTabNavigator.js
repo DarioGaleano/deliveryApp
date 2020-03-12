@@ -44,7 +44,6 @@ const CartStack = createStackNavigator(
 
 CartStack.navigationOptions = {
   tabBarLabel: ' ',
-  header: null,
   tabBarIcon: ({ focused }) => (
     <TabBarIcon focused={focused} name={'ios-cart'} />
   ),

@@ -45,7 +45,7 @@ export default function HomeScreen(props) {
         body: JSON.stringify({
           page:page,
           //limit: items per page
-	        limit:1
+	        limit:5
         })
       });
       setLoading(false )
@@ -98,7 +98,6 @@ export default function HomeScreen(props) {
   const findProducts=async (page)=>{
     setLoading(true)
     setIsFetching(true)
-    console.log("BUSCANDOOOOOOOOOO")
 
     try {
       let request = await fetch(config.endpoint + "/findproducts", {
@@ -157,7 +156,7 @@ export default function HomeScreen(props) {
         delay: 0
       });
     }
-    setIsFetching(false)
+    
   }
 
   useEffect(()=>{getProducts(page)},[])
@@ -193,6 +192,9 @@ export default function HomeScreen(props) {
           setText={textInput}
         />
       </View>
+      <View style={{height:40, width:'100%', borderWidth:1, borderColor:'green'}}>
+
+      </View>
         <FlatList
           data={ products[0]!=={}? products : null }
           horizontal={false}
@@ -202,7 +204,7 @@ export default function HomeScreen(props) {
               price={item.item.price}
               image={item.item.image}
               id={item.item._id}
-              addMore={false}
+              cart={false}
             />
           }
           keyExtractor={item=> item._id}
