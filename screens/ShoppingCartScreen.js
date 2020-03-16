@@ -5,6 +5,8 @@ import Toast from "react-native-root-toast";
 import config from '../config'
 import Product from '../components/Product'
 import Colors from '../constants/Colors';
+import Loader from '../components/Loader'
+import ButtonBottom from '../components/ButtonBottom'
 
 export default class ShoppinCartScreen extends Component{
 
@@ -13,13 +15,15 @@ export default class ShoppinCartScreen extends Component{
       super(props)
       this.state={
         products:[],
-        Loading:false,
-        isFetching:false
+        loading:false,
+        isFetching:false,
+        total:''
       }
     }
     getProducts= async () => {
         await this.setState({Loading:true})
         try {
+          await this.setState({loading:true})
           let request = await fetch(config.endpoint + "/getproductshoppingcart", {
             method: "POST",
             headers: {
@@ -28,7 +32,7 @@ export default class ShoppinCartScreen extends Component{
             },
           });
 
-          await this.setState({Loading:true})
+          await this.setState({loading:false})
 
           const response = await request.json();
           console.log("AQUI SI",response)
@@ -45,6 +49,7 @@ export default class ShoppinCartScreen extends Component{
               return;
             } else {
               let productsAux=[];
+                await this.setState({total: response.totalAmount})
                 response.items.forEach(element => {
                     productsAux.push(element)
                 });
@@ -74,29 +79,38 @@ export default class ShoppinCartScreen extends Component{
         console.log(this.state.products)
     };
 
-    setProduct=async(data)=>{
+    setProduct=async(data, newTotal)=>{
+      await this.setState({total:newTotal})
       await this.setState({products:data})
+    }
+    setNewTotal=async(newTotal)=>{
+      console.log("newTotal",newTotal)
+      await this.setState({total:newTotal})
     }
     componentWillMount(){
       this.focusListener =  this.props.navigation.addListener("didFocus", async () => {
         this.getProducts()
         console.log("Focused")
-
         
       })
     }
 
     render(){
-      const {products}= this.state
+      const {products, loading}= this.state
       return(
       <View style={styles.container}>
-          <View style={{justifyContent:'space-around', alignItems:'center', width:'100%', height:'20%'}}>
-              <View style={{width:'100%', height: '70%'}}>
+          <View style={{justifyContent:'space-around', alignItems:'center', width:'100%', height:'20%', flexDirection:'row'}}>
+              <View style={{width:'30%', height: '70%', }}>
                   <Image
                       style={{width:'100%', height: '100%'}}
                       resizeMode={'contain'}
                       source={require("../assets/images/shopping-cart.png")}
                   />
+              </View>
+              <View style={{width:'70%', height: '70%', padding:10}}>
+                <View>
+                  <Text>Total a pagar:  {this.state.total}</Text>
+                </View>
               </View>
               
           </View>
@@ -104,6 +118,7 @@ export default class ShoppinCartScreen extends Component{
           <FlatList
             data={ products[0]!=={}? products : null }
             horizontal={false}
+            contentContainerStyle={{justifyContent:'center', alignItems:'center'}}
             renderItem={ (item) => 
               <Product 
                 name={item.item.product.name} 
@@ -113,16 +128,20 @@ export default class ShoppinCartScreen extends Component{
                 cart={true}
                 quantity={item.item.quantity}
                 setProduct={this.setProduct}
+                newTotal={this.setNewTotal}
               />
             }
             keyExtractor={item=> item._id}
           />
           </View>
-          <View style={{width:'100%', height: '14%',justifyContent:'center', alignItems:'center', }}>
-            <TouchableOpacity style={{backgroundColor: Colors.tabIconSelected, height: '50%', width:'90%', borderRadius:50, justifyContent:'center', alignItems:'center'}}>
-                <Text style= {{color:'white', fontWeight:'bold'}}>Realizar Compra</Text>
-            </TouchableOpacity>
-          </View>
+          
+          <ButtonBottom
+            onPress={()=>this.props.navigation.navigate('payment',{totalAmount:this.state.total})}
+            text={'Realizar Compra'}
+          />
+          <Loader
+            loading={loading}
+          />
       </View>)
     }
 }

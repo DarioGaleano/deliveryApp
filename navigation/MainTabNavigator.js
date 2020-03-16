@@ -3,6 +3,7 @@ import { Platform, TouchableOpacity } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator, createDrawerNavigator } from 'react-navigation';
 import HomeScreen from '../screens/HomeScreen'
 import ShoppingCartScreen from '../screens/ShoppingCartScreen'
+import PaymentScreen from '../screens/PaymentScreen'
 import AccountScreen from '../screens/AccountScreen'
 import DetailsScreen from '../screens/DetailsScreen'
 import TabBarIcon from '../components/TabBarIcon'
@@ -38,6 +39,7 @@ const CartStack = createStackNavigator(
   {
     cart: ShoppingCartScreen,
     details:  DetailsScreen,
+    payment: PaymentScreen
   },
   config
 );

@@ -89,7 +89,7 @@ export default function Product(props) {
         });
 
         const response = await request.json();
-        console.log("AQUI",response)
+        console.log("AQUI CART",response.cart.totalAmount)
         if (request.status === 200) {
           if (response.error) {
             Toast.show(response.error.message, {
@@ -102,7 +102,8 @@ export default function Product(props) {
             });
             return;
           } else {
-            await setCont(count+1);               
+            await setCont(count+1);     
+            props.newTotal(response.cart.totalAmount)          
           }
         } else {
           Toast.show(response.error, {
@@ -142,7 +143,6 @@ export default function Product(props) {
       });
 
       const response = await request.json();
-      console.log("AQUI",response)
       if (request.status === 200) {
         if (response.error) {
           Toast.show(response.error.message, {
@@ -155,7 +155,8 @@ export default function Product(props) {
           });
           return;
         } else {
-          await setCont(count-1);               
+          await setCont(count-1);     
+          props.newTotal(response.cart.totalAmount)                    
         }
       } else {
         Toast.show(response.error, {
@@ -208,7 +209,7 @@ export default function Product(props) {
             });
             return;
           } else {
-            props.setProduct(response.cart.items)              
+            props.setProduct(response.cart.items, response.cart.totalAmount)              
           }
         } else {
           Toast.show(response.error, {
@@ -315,7 +316,8 @@ const styles= StyleSheet.create({
         flexDirection: 'row',
         borderColor: 'gray',
         marginBottom:5,
-        width: "100%",
+        backgroundColor:'white',
+        width: "90%",
         justifyContent: 'center',
         alignItems:'center',
         height: 150,

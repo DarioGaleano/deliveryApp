@@ -10,10 +10,10 @@ import { Badge } from 'react-native-elements';
 
 let index=0;
 const categorys=[
-  { name:"Enlatados", key:index++ },
-  { name:"Licores", key:index++ },
-  { name:"Granos", key:index++},
-  { name:"Refrescos", key:index++}
+  { name:"Enlatados", key:index++, active:false },
+  { name:"Licores", key:index++, active:false},
+  { name:"Granos", key:index++, active:false},
+  { name:"Refrescos", key:index++, active:false}
 
 ]
 
@@ -40,9 +40,9 @@ export default function HomeScreen(props) {
   const [isFetching, setIsFetching]=useState(false)
   const [loading, setLoading]=useState(false)
   const [backgroundBadge, setBackgroundBagde]=useState('green')
+  const [active, setActive]=useState('')
   const getProducts= async (page) => {
     setLoading(true)
-    setIsFetching(true)
     console.log("PAGE",page)
     try {
       let request = await fetch(config.endpoint + "/getproducts", {
@@ -56,8 +56,7 @@ export default function HomeScreen(props) {
 	        limit:5
         })
       });
-      setLoading(false )
-      setIsFetching(false)
+      setLoading(false)
       const response = await request.json();
       console.log("AQUI",response.docs)
       if (request.status === 200) {
@@ -205,12 +204,15 @@ export default function HomeScreen(props) {
         <FlatList
             data={ categorys}
             horizontal={true}
+            contentContainerStyle={{justifyContent:'center', alignItems:'center'}}
             renderItem={ (item) => 
               <Badge 
                 value={item.item.name}
+                active={active}
+                index={item.item.key}
                 status="error"
                 badgeStyle={{width:100, height:50, marginHorizontal:10, backgroundColor:backgroundBadge}}
-                onPress={()=> setBackgroundBagde('red')}
+                // Aplicar logica paymentScreen onPress={()=> props.item.active===props.index? setBackgroundBagde('red'):setBackgroundBagde('green')}
               />
             }
             keyExtractor={item=> item.key}
@@ -219,6 +221,7 @@ export default function HomeScreen(props) {
         <FlatList
           data={ products[0]!=={}? products : null }
           horizontal={false}
+          contentContainerStyle={{justifyContent:'center', alignItems:'center'}}
           renderItem={ (item) => 
             <Product 
               name={item.item.name} 
