@@ -1,57 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image, AsyncStorage } from "react-native";
-import config from '../config/'
-import Loader from '../components/Loader'
+import Loader from './Loader'
 import Toast from "react-native-root-toast";
 import {Ionicons} from '@expo/vector-icons'
 import Colors from '../constants/Colors';
+import { shoppingCartServices } from '../services'
 
 export default function Product(props) {
-    const [loading, setLoading]=useState(false)
-    const [count, setCont]=useState(1);
+  const [loading, setLoading]=useState(false)
+  const [count, setCont]=useState(1);
 
-    const addToShoppingCart=async ()=>{
-        await setLoading(true)
-        console.log("TOKEEEN",await AsyncStorage.getItem("token"))
-        try {
-            let request = await fetch(config.endpoint + "/addproductshoppingcart", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + (await AsyncStorage.getItem("token"))
-              },
-              body: JSON.stringify({
-                product:props.id,
-	            quantity: count
-              })
-            });
-            await setLoading(false)
-            await setCont(1)
-            const response = await request.json();
-            console.log("AQUI",response)
-            if (request.status === 200) {
-              if (response.error) {
-                Toast.show(response.error.message, {
-                  duration: Toast.durations.LONG,
-                  position: Toast.positions.BOTTOM,
-                  shadow: true,
-                  animation: true,
-                  hideOnPress: true,
-                  delay: 0
-                });
-                return;
-              } else {
-                Toast.show("Añadido a tu carrito con exito", {
-                    duration: Toast.durations.LONG,
-                    position: Toast.positions.BOTTOM,
-                    shadow: true,
-                    animation: true,
-                    hideOnPress: true,
-                    delay: 0
-                  });               
-              }
-            } else {
-              Toast.show(response.error, {
+  useEffect(()=>{
+    props.cart?setCont(props.quantity):setCont(count)
+  },[])
+    
+  const addToShoppingCart=async ()=>{
+      await setLoading(true)
+      console.log("TOKEEEN",await AsyncStorage.getItem("token"))
+      try {
+          const { status, response } = await shoppingCartServices.addProductShoppingCart({ id: props.id, count });
+          setLoading(false)
+          setCont(1)
+          console.log("AQUI",response)
+          if (status === 200) {
+            if (response.error) {
+              Toast.show(response.error.message, {
                 duration: Toast.durations.LONG,
                 position: Toast.positions.BOTTOM,
                 shadow: true,
@@ -59,10 +32,19 @@ export default function Product(props) {
                 hideOnPress: true,
                 delay: 0
               });
+              return;
+            } else {
+              Toast.show("Añadido a tu carrito con exito", {
+                  duration: Toast.durations.LONG,
+                  position: Toast.positions.BOTTOM,
+                  shadow: true,
+                  animation: true,
+                  hideOnPress: true,
+                  delay: 0
+                });               
             }
-          } catch (error) {
-            console.log(error)
-            Toast.show("Problemas al enviar o recibir los datos", {
+          } else {
+            Toast.show(response.error, {
               duration: Toast.durations.LONG,
               position: Toast.positions.BOTTOM,
               shadow: true,
@@ -71,26 +53,26 @@ export default function Product(props) {
               delay: 0
             });
           }
-        };
-
+        } catch (error) {
+          console.log(error)
+          Toast.show("Problemas al enviar o recibir los datos", {
+            duration: Toast.durations.LONG,
+            position: Toast.positions.BOTTOM,
+            shadow: true,
+            animation: true,
+            hideOnPress: true,
+            delay: 0
+          });
+        }
+  };
     
-    incrementProduct=async ()=>{
+    const incrementProduct=async ()=>{
       console.log(props.id)
       try {
-        let request = await fetch(config.endpoint + "/incrementproductshoppingcart", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + (await AsyncStorage.getItem("token"))
-          },
-          body: JSON.stringify({
-            item:props.id,
-          })
-        });
+        const { status, response } = await shoppingCartServices.incrementProductShoppingCart({ id: props.id });
 
-        const response = await request.json();
         console.log("AQUI CART",response.cart.totalAmount)
-        if (request.status === 200) {
+        if (status === 200) {
           if (response.error) {
             Toast.show(response.error.message, {
               duration: Toast.durations.LONG,
@@ -128,22 +110,12 @@ export default function Product(props) {
       }
   }
   
-  decrementProduct=async ()=>{
+  const decrementProduct=async ()=>{
     console.log(props.id)
     try {
-      let request = await fetch(config.endpoint + "/decrementproductshoppingcart", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + (await AsyncStorage.getItem("token"))
-        },
-        body: JSON.stringify({
-          item:props.id,
-        })
-      });
-
-      const response = await request.json();
-      if (request.status === 200) {
+      const { status, response } = await shoppingCartServices.decrementProductShoppingCart({ id: props.id });
+      
+      if (status === 200) {
         if (response.error) {
           Toast.show(response.error.message, {
             duration: Toast.durations.LONG,
@@ -179,40 +151,16 @@ export default function Product(props) {
         delay: 0
       });
     }
-}
+  }
 
-    removeProduct=async ()=>{
-      console.log(props.id)
-      try {
-        let request = await fetch(config.endpoint + "/removeproductshoppingcart", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + (await AsyncStorage.getItem("token"))
-          },
-          body: JSON.stringify({
-            item:props.id,
-          })
-        });
-
-        const response = await request.json();
-        console.log("AQUI",response)
-        if (request.status === 200) {
-          if (response.error) {
-            Toast.show(response.error.message, {
-              duration: Toast.durations.LONG,
-              position: Toast.positions.BOTTOM,
-              shadow: true,
-              animation: true,
-              hideOnPress: true,
-              delay: 0
-            });
-            return;
-          } else {
-            props.setProduct(response.cart.items, response.cart.totalAmount)              
-          }
-        } else {
-          Toast.show(response.error, {
+  const removeProduct=async ()=>{
+    console.log(props.id)
+    try {
+      const { status, response } = await shoppingCartServices.removeProductShoppingCart({ id: props.id });
+      console.log("AQUI",response)
+      if (status === 200) {
+        if (response.error) {
+          Toast.show(response.error.message, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
             shadow: true,
@@ -220,10 +168,12 @@ export default function Product(props) {
             hideOnPress: true,
             delay: 0
           });
+          return;
+        } else {
+          props.setProduct(response.cart.items, response.cart.totalAmount)              
         }
-      } catch (error) {
-        console.log(error)
-        Toast.show("Problemas al enviar o recibir los datos", {
+      } else {
+        Toast.show(response.error, {
           duration: Toast.durations.LONG,
           position: Toast.positions.BOTTOM,
           shadow: true,
@@ -232,12 +182,19 @@ export default function Product(props) {
           delay: 0
         });
       }
+    } catch (error) {
+      console.log(error)
+      Toast.show("Problemas al enviar o recibir los datos", {
+        duration: Toast.durations.LONG,
+        position: Toast.positions.BOTTOM,
+        shadow: true,
+        animation: true,
+        hideOnPress: true,
+        delay: 0
+      });
     }
+  }
 
-    useEffect(()=>{
-      props.cart?setCont(props.quantity):setCont(count)
-    },[])
-    
 
     return (
         <TouchableOpacity style={styles.container} activeOpacity={0.9}>

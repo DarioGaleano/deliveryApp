@@ -1,12 +1,10 @@
 import React,{useState, useEffect, useReducer} from 'react';
 import { View, Text, ScrollView, StyleSheet, FlatList, TextInput,AsyncStorage } from 'react-native';
-import Search from '../components/Search'
-import Product from '../components/Product';
-import data from '../screens/data.json'
+import { Search, Product, Loader } from '../components'
+import { data } from '../constants'
 import Toast from "react-native-root-toast";
-import config from '../config/'
-import Loader from '../components/Loader'
 import { Badge } from 'react-native-elements';
+import { productServices } from '../services'
 
 let index=0;
 const categorys=[
@@ -18,8 +16,6 @@ const categorys=[
 ]
 
 export default function HomeScreen(props) { 
-  
-  
   const [products, dispatch] = useReducer((myArray, { type, value }) => {
     switch (type) {
       case "add":
@@ -42,24 +38,13 @@ export default function HomeScreen(props) {
   const [backgroundBadge, setBackgroundBagde]=useState('green')
   const [active, setActive]=useState('')
   const getProducts= async (page) => {
-    setLoading(true)
     console.log("PAGE",page)
     try {
-      let request = await fetch(config.endpoint + "/getproducts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          page:page,
-          //limit: items per page
-	        limit:5
-        })
-      });
+      setLoading(true)
+      const { status, response } = await productServices.getProducts({page});
       setLoading(false)
-      const response = await request.json();
       console.log("AQUI",response.docs)
-      if (request.status === 200) {
+      if (status === 200) {
         if (response.error) {
           Toast.show(response.error.message, {
             duration: Toast.durations.LONG,
@@ -107,21 +92,9 @@ export default function HomeScreen(props) {
     setIsFetching(true)
 
     try {
-      let request = await fetch(config.endpoint + "/findproducts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          page:page,
-          //limit: items per page
-          limit:1,
-          query: textInput
-        })
-      });
+      const { status, response } = await productServices.findProducts({ page, textInput }) 
 
-      const response = await request.json();
-      if (request.status === 200) {
+      if (status === 200) {
         if (response.error) {
           Toast.show(response.error.message, {
             duration: Toast.durations.LONG,
@@ -211,8 +184,8 @@ export default function HomeScreen(props) {
                 active={active}
                 index={item.item.key}
                 status="error"
-                badgeStyle={{width:100, height:50, marginHorizontal:10, backgroundColor:backgroundBadge}}
-                // Aplicar logica paymentScreen onPress={()=> props.item.active===props.index? setBackgroundBagde('red'):setBackgroundBagde('green')}
+                badgeStyle={{width:100, height:50, marginHorizontal:10, backgroundColor:active===item.item.key? 'red':'green'}}
+                onPress={()=> setActive(item.item.key) }
               />
             }
             keyExtractor={item=> item.key}
@@ -221,7 +194,7 @@ export default function HomeScreen(props) {
         <FlatList
           data={ products[0]!=={}? products : null }
           horizontal={false}
-          contentContainerStyle={{justifyContent:'center', alignItems:'center'}}
+          contentContainerStyle={{justifyContent:'center', alignItems:'center', paddingTop:5}}
           renderItem={ (item) => 
             <Product 
               name={item.item.name} 

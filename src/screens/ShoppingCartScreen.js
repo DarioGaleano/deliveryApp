@@ -2,41 +2,25 @@ import React, { Component, useReducer, useEffect, useState } from 'react';
 import { TextInput, View, TouchableOpacity, StyleSheet, Text, Image, SafeAreaView, FlatList,AsyncStorage } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import Toast from "react-native-root-toast";
-import config from '../config'
-import Product from '../components/Product'
-import Colors from '../constants/Colors';
-import Loader from '../components/Loader'
-import ButtonBottom from '../components/ButtonBottom'
-
-export default class ShoppinCartScreen extends Component{
+import { Product, Loader, ButtonBottom } from '../components'
+import { colors } from '../constants'
+import { shoppingCartServices } from '../services'
 
 
-    constructor(props){
-      super(props)
-      this.state={
-        products:[],
-        loading:false,
-        isFetching:false,
-        total:''
-      }
-    }
-    getProducts= async () => {
-        await this.setState({Loading:true})
+export default function ShoppinCartScreen(props){
+
+    const [products, setProducts] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [total, setTotal]=useState('')
+
+    const getProducts= async () => {
+        setLoading(true)
         try {
-          await this.setState({loading:true})
-          let request = await fetch(config.endpoint + "/getproductshoppingcart", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + (await AsyncStorage.getItem("token"))
-            },
-          });
-
-          await this.setState({loading:false})
-
-          const response = await request.json();
+          setLoading(true)
+          const { status, response } = await shoppingCartServices.getProductShoppingCart();
+          setLoading(false)
           console.log("AQUI SI",response)
-          if (request.status === 200) {
+          if (status === 200) {
             if (response.error) {
               Toast.show(response.error.message, {
                 duration: Toast.durations.LONG,
@@ -49,11 +33,11 @@ export default class ShoppinCartScreen extends Component{
               return;
             } else {
               let productsAux=[];
-                await this.setState({total: response.totalAmount})
-                response.items.forEach(element => {
-                    productsAux.push(element)
-                });
-                await this.setState({products: productsAux})
+              setTotal(response.totalAmount)
+              response.items.forEach(element => {
+                  productsAux.push(element)
+              });
+              setProducts(productsAux)
             }
           } else {
             Toast.show(response.error.message, {
@@ -76,40 +60,36 @@ export default class ShoppinCartScreen extends Component{
             delay: 0
           });
         }
-        console.log(this.state.products)
+        console.log(products)
     };
 
-    setProduct=async(data, newTotal)=>{
-      await this.setState({total:newTotal})
-      await this.setState({products:data})
+    const setProduct=async(data, newTotal)=>{
+      setTotal(newTotal)
+      setProducts(data)
     }
-    setNewTotal=async(newTotal)=>{
-      console.log("newTotal",newTotal)
-      await this.setState({total:newTotal})
-    }
-    componentWillMount(){
-      this.focusListener =  this.props.navigation.addListener("didFocus", async () => {
-        this.getProducts()
+
+    useEffect(()=>{
+      props.navigation.addListener("didFocus", async () =>{
+        getProducts()
         console.log("Focused")
         
       })
-    }
+    },[])
 
-    render(){
-      const {products, loading}= this.state
-      return(
+
+    return(
       <View style={styles.container}>
           <View style={{justifyContent:'space-around', alignItems:'center', width:'100%', height:'20%', flexDirection:'row'}}>
               <View style={{width:'30%', height: '70%', }}>
                   <Image
                       style={{width:'100%', height: '100%'}}
                       resizeMode={'contain'}
-                      source={require("../assets/images/shopping-cart.png")}
+                      source={require("../../assets/images/shopping-cart.png")}
                   />
               </View>
               <View style={{width:'70%', height: '70%', padding:10}}>
                 <View>
-                  <Text>Total a pagar:  {this.state.total}</Text>
+                  <Text>Total a pagar:  {total}</Text>
                 </View>
               </View>
               
@@ -118,7 +98,7 @@ export default class ShoppinCartScreen extends Component{
           <FlatList
             data={ products[0]!=={}? products : null }
             horizontal={false}
-            contentContainerStyle={{justifyContent:'center', alignItems:'center'}}
+            contentContainerStyle={{justifyContent:'center', alignItems:'center', paddingTop:5}}
             renderItem={ (item) => 
               <Product 
                 name={item.item.product.name} 
@@ -127,8 +107,8 @@ export default class ShoppinCartScreen extends Component{
                 id={item.item._id}
                 cart={true}
                 quantity={item.item.quantity}
-                setProduct={this.setProduct}
-                newTotal={this.setNewTotal}
+                setProduct={setProduct}
+                newTotal={(newTotal)=> setTotal(newTotal)}
               />
             }
             keyExtractor={item=> item._id}
@@ -136,20 +116,20 @@ export default class ShoppinCartScreen extends Component{
           </View>
           
           <ButtonBottom
-            onPress={()=>this.props.navigation.navigate('payment',{totalAmount:this.state.total})}
+            onPress={()=>props.navigation.navigate('payment',{totalAmount:total})}
             text={'Realizar Compra'}
           />
           <Loader
             loading={loading}
           />
-      </View>)
-    }
+      </View>
+    )
 }
 
 ShoppinCartScreen.navigationOptions = {
   title: 'Carrito de Compras',
   headerStyle: {
-    backgroundColor: Colors.tabIconSelected,
+    backgroundColor: colors.tabIconSelected,
   },
   headerTintColor: '#fff',
         headerTitleStyle: {

@@ -5,9 +5,9 @@ import DatePicker from "react-native-datepicker";
 import ModalSelector from "react-native-modal-selector";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-root-toast";
-import config from "../../config";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import Loader from "../../components/Loader";
+import { Loader } from '../../components'
+import { userServices } from '../../services'
 import { StackActions } from "react-navigation";
 
 let index = 0;
@@ -194,28 +194,11 @@ export default function SignInScreen (props) {
     console.log(document)
     console.log(address)
     console.log(password)
-    console.log(config.endpoint)
     try {
-      const request = await fetch(config.endpoint + "/register/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: completeName,
-          email: email,
-          userName: userName,
-          phoneNumber: completePhoneNumber,
-          document: document,
-          address:address,
-          password: password
-        })
-      });
-      
-      const response = await request.json();
+      const { status, response } = await userServices.register({completeName, email, userName, completePhoneNumber, document, address, password});
       console.log(response);
 
-      if (request.status === 200) {
+      if (status === 200) {
         if (response.error) {
           await setLoading(false);
           console.log(response.error);

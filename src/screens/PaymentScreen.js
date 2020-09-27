@@ -1,8 +1,8 @@
 import React,{useState} from 'react'
 import {View, Text, TouchableOpacity, StyleSheet, TextInput, FlatList} from 'react-native'
-import Colors from '../constants/Colors'
+import { colors, } from '../constants/'
 import { SimpleLineIcons, Ionicons } from '@expo/vector-icons';
-import ButtonBottom from '../components/ButtonBottom'
+import { ButtonBottom } from '../components/'
 import { withTheme } from 'react-native-elements';
 
 
@@ -11,7 +11,7 @@ function Tip(props){
     let symbol=props.amount!=='Otro'? '$':'';
 
     return(
-        <TouchableOpacity style={{  backgroundColor: props.active===props.index?'red':'white', width:60, height:40, borderWidth:1, borderColor:'gray', borderRadius:5, justifyContent:'center', alignItems:'center'}}
+        <TouchableOpacity style={{ borderColor:props.active===props.index?'red':'gray',backgroundColor: props.active===props.index?'red':'white', width:60, height:40, borderWidth:1, borderRadius:5, justifyContent:'center', alignItems:'center'}}
             onPress={()=>props.changeTip(props.amount, props.index)}
         >
             <Text style={styles.text}>{symbol}{props.amount}</Text>
@@ -37,7 +37,7 @@ export default function PaymentScreen(props){
     }
     return (    
         <View style={styles.container}>
-            <View style={[styles.boxShadow,{ height: 150,}]}>
+            <View style={[styles.boxShadow,{ height: 120,}]}>
                 <View style={{height:'20%', justifyContent:'center'}}>
                     <Text style={styles.textTitle}>
                         Direccion    
@@ -68,7 +68,7 @@ export default function PaymentScreen(props){
                     <View style={{ width:'10%'}}>
                         <SimpleLineIcons
                             name={'paypal'}
-                            color={Colors.tabIconSelected}
+                            color={colors.tabIconSelected}
                             size={20}
                         />
                     </View>
@@ -76,7 +76,7 @@ export default function PaymentScreen(props){
                         <Text style={styles.textTitle}>Paypal</Text>
                     </View>
                     <TouchableOpacity style={{width:'60%', alignItems:'flex-end'}}>
-                        <Text style={[styles.textTitle, {color:Colors.tabIconSelected}]}>Cambiar</Text>
+                        <Text style={[styles.textTitle, {color:colors.tabIconSelected}]}>Cambiar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -103,7 +103,7 @@ export default function PaymentScreen(props){
                 </View>
             </View>
 
-            <View style={[styles.boxShadow, { height: 150,}]}>
+            <View style={[styles.boxShadow, { height: 130,}]}>
                 <View style={{height:'20%', justifyContent:'center'}}>
                     <Text style={styles.textTitle}>Resumen</Text>
                 </View>
@@ -131,7 +131,7 @@ export default function PaymentScreen(props){
 PaymentScreen.navigationOptions = {
   title: 'Tu pedido',
   headerStyle: {
-    backgroundColor: Colors.tabIconSelected,
+    backgroundColor: colors.tabIconSelected,
   },
   headerTintColor: '#fff',
         headerTitleStyle: {

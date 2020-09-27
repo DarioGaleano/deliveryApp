@@ -1,13 +1,10 @@
 import React,{useState, useEffect, useReducer} from 'react';
 import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native';
-import Search from '../components/Search'
-import Product from '../components/Product';
+import { Search, Product, Loader } from '../components'
 import data from '../screens/data.json'
 import Toast from "react-native-root-toast";
-import config from '../config/'
-import Loader from '../components/Loader'
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import { productServices } from '../services'
 
 export default function SearchScreen(props) { 
     
@@ -37,21 +34,10 @@ export default function SearchScreen(props) {
     console.log(productsFounds)
 
     try {
-      let request = await fetch(config.endpoint + "/findproducts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          page:page,
-          //limit: items per page
-          limit:1,
-          query: textInput
-        })
-      });
 
-      const response = await request.json();
-      if (request.status === 200) {
+      const { status, response } = await productServices.findProducts({ page, textInput });
+
+      if (status === 200) {
         if (response.error) {
           setLoading(false )
           Toast.show(response.error.message, {

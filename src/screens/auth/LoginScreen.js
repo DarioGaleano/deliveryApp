@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, AsyncStorage, Platform } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  AsyncStorage,
+  Platform,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-root-toast";
-import config from "../../config/index";
 import { StackActions } from "react-navigation";
-import Loader from "../../components/Loader";
+import { Loader } from '../../components'
 import Modal from "react-native-modal";
-import Colors from '../../constants/Colors'
+import { colors } from '../../constants'
+import { userServices } from "../../services";
 
-function RenderButton(props)
-{
+function RenderButton(props) {
   return (
     <TouchableOpacity
       disabled={props.sending}
@@ -18,38 +25,28 @@ function RenderButton(props)
     >
       <Text style={styles.loginBtnText}>{props.text}</Text>
     </TouchableOpacity>
-  )
+  );
 }
 
-function RenderModalContent (props)
-{ 
-  const [loading, setLoading]=useState(false)
-  const [sending, setSending]=useState(false)
-  const [emailReset, setEmailReset]=useState('')
+function RenderModalContent(props) {
+  const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [emailReset, setEmailReset] = useState("");
 
-  const sendMailTest = async()=>{
-    props.navigation.navigate("forgot")
-    props.setVisible(false)
-  }
+  const sendMailTest = async () => {
+    props.navigation.navigate("forgot");
+    props.setVisible(false);
+  };
 
   const sendMail = async () => {
-    props.navigation.navigate("forgot")
-    props.setVisible(false)
+    props.navigation.navigate("forgot");
+    props.setVisible(false);
     setLoading(true);
     let params = "email=" + emailReset;
     setSending(true);
-    try{
-      const request = await fetch(config.endpoint + "/users/generatetoken", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: params
-      });
-      const response = await request.json();
-      console.log(response);
-      setLoading(false);
-      switch (request.status) {
+    try {
+      const { status, response } = await userServices.forgotPassword({ emailReset });
+      switch (status) {
         case 200: {
           if (response.code === 201) {
             Toast.show(response.error, {
@@ -58,7 +55,7 @@ function RenderModalContent (props)
               shadow: true,
               animation: true,
               hideOnPress: true,
-              delay: 0
+              delay: 0,
             });
             setModalVisible(false);
             props.navigation.navigate("forgot");
@@ -70,7 +67,7 @@ function RenderModalContent (props)
               shadow: true,
               animation: true,
               hideOnPress: true,
-              delay: 0
+              delay: 0,
             });
           }
           setSending(false);
@@ -84,7 +81,7 @@ function RenderModalContent (props)
             position: Toast.positions.BOTTOM,
             animation: true,
             hideOnPress: true,
-            delay: 0
+            delay: 0,
           });
           break;
         }
@@ -98,12 +95,12 @@ function RenderModalContent (props)
         shadow: true,
         animation: true,
         hideOnPress: true,
-        delay: 0
+        delay: 0,
       });
     }
   };
 
-  return(
+  return (
     <View style={styles.modalContent}>
       <View style={{ height: 40 }}>
         <Text style={{}}>
@@ -111,35 +108,41 @@ function RenderModalContent (props)
           contraseña.
         </Text>
       </View>
-      <Loader    message="Enviando código" />
+      <Loader message="Enviando código" />
       <View style={{ height: 60 }}>
         <TextInput
           style={[styles.inputStyleModal]}
           underlineColorAndroid="transparent"
-          placeholder="Coloque su email"        
+          placeholder="Coloque su email"
           maxLength={50}
           keyboardType="email-address"
           returnKeyLabel={"next"}
-          onChangeText={emailReset => setEmailReset(emailReset)}
-          />
+          onChangeText={(emailReset) => setEmailReset(emailReset)}
+        />
       </View>
       <View style={styles.buttonsSpaceResetPassword}>
-        <RenderButton text={"Enviar"} onPress={/*sendMail*/ sendMailTest} sending={sending}/>
-        <RenderButton text={"Cancelar"} onPress={() => props.setVisible(false)} sending={sending}/>
+        <RenderButton
+          text={"Enviar"}
+          onPress={/*sendMail*/ sendMailTest}
+          sending={sending}
+        />
+        <RenderButton
+          text={"Cancelar"}
+          onPress={() => props.setVisible(false)}
+          sending={sending}
+        />
       </View>
     </View>
-  )
-};
+  );
+}
 
+export default function LoginScreen(props) {
+  const [user, setUser] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
-export default function LoginScreen(props){
-  
-  const [user, setUser]=useState('')
-  const [password, setPassword]=useState('')
-  const [loading, setLoading]=useState(false)
-  const [showPassword, setShowPassword]=useState(false)
-  const [modalVisible, setModalVisible]=useState(false)
-  
   const validate = () => {
     if (!user) {
       Toast.show("Debe ingresar su nombre de usuario o correo electronico", {
@@ -148,7 +151,7 @@ export default function LoginScreen(props){
         shadow: true,
         animation: true,
         hideOnPress: true,
-        delay: 0
+        delay: 0,
       });
       return false;
     } else if (!password) {
@@ -158,98 +161,84 @@ export default function LoginScreen(props){
         shadow: true,
         animation: true,
         hideOnPress: true,
-        delay: 0
+        delay: 0,
       });
       return false;
     } else return true;
   };
 
   const loginPressed = async () => {
-
-    if (!validate()) 
-      return false;
-    setLoading (true);
-    console.log("AQUI")
-    console.log(user)
-    console.log(password)
+    if (!validate()) return false;
+    setLoading(true);
+    console.log(user);
+    console.log(password);
     try {
-      let request = await fetch(config.endpoint + "/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: user,
-          password: password
-        })
-      });
-
-      const response = await request.json();
-      console.log(request.status);
-      console.log(response)
-      if (request.status === 200) {
+      const { status, response } = await userServices.login({user, password});
+      console.log(response.status);
+      console.log(response);
+      if (status === 200) {
         if (response.error) {
-          setLoading(false )
+          setLoading(false);
           Toast.show(response.error, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
             shadow: true,
             animation: true,
             hideOnPress: true,
-            delay: 0
+            delay: 0,
           });
           return;
         } else {
-          setLoading(false)
+          setLoading(false);
           await AsyncStorage.setItem("token", response.token);
-          console.log(response)
-          
+          console.log(response);
+
           Toast.show("Bienvenido Sr(a).  " + response.user.name, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
             shadow: true,
             animation: true,
             hideOnPress: true,
-            delay: 0
+            delay: 0,
           });
           props.navigation.navigate("App");
         }
       } else {
-        setLoading(false)
+        setLoading(false);
         Toast.show(response.error, {
           duration: Toast.durations.LONG,
           position: Toast.positions.BOTTOM,
           shadow: true,
           animation: true,
           hideOnPress: true,
-          delay: 0
+          delay: 0,
         });
       }
     } catch (error) {
-      console.log(error)
-      setLoading(false)
+      console.log(error);
+      setLoading(false);
       Toast.show("Problemas al enviar o recibir los datos", {
         duration: Toast.durations.LONG,
         position: Toast.positions.BOTTOM,
         shadow: true,
         animation: true,
         hideOnPress: true,
-        delay: 0
+        delay: 0,
       });
     }
   };
 
-  const _onPressFogetPassword = () =>
-    setModalVisible(!modalVisible);
+  const _onPressFogetPassword = () => setModalVisible(!modalVisible);
 
-  
   const onLoginTest = async () => {
     const token = "123";
     AsyncStorage.setItem("token", token);
     props.navigation.navigate("home");
   };
 
-  const setVisible = (visible) => { setModalVisible(visible) }
+  const setVisible = (visible) => {
+    setModalVisible(visible);
+  };
 
   return (
     <View style={styles.container}>
@@ -257,14 +246,15 @@ export default function LoginScreen(props){
         style={{
           height: "20%",
           justifyContent: "center",
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
-        { /*<Image
+        {
+          /*<Image
           style={styles.logo}
           source={require("../assets/images/logo-remeny.png")}
         />*/
-        <Text>Market Place</Text>
+          <Text>Market Place</Text>
         }
       </View>
 
@@ -273,29 +263,29 @@ export default function LoginScreen(props){
           width: "100%",
           height: "20%",
           alignItems: "center",
-          justifyContent: "space-around"
+          justifyContent: "space-around",
         }}
       >
         <TextInput
           style={[
             styles.input,
-            { borderColor: "#a4a4a4", borderWidth: 1, borderRadius: 5 }
+            { borderColor: "#a4a4a4", borderWidth: 1, borderRadius: 5 },
           ]}
-          onChangeText={text => setUser(text.toLowerCase())}
+          onChangeText={(text) => setUser(text.toLowerCase())}
           placeholder={"Correo o nombre de usuario"}
           placeholderTextColor="#a4a4a4"
         />
         <View style={styles.viewPasswordInput}>
           <TextInput
             style={styles.input}
-            onChangeText={text => setPassword(text)}
+            onChangeText={(text) => setPassword(text)}
             placeholder={"Contraseña"}
             placeholderTextColor="#a4a4a4"
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setShowPassword(!showPassword )}
+            onPress={() => setShowPassword(!showPassword)}
           >
             <View style={styles.icon}>
               <Ionicons
@@ -313,12 +303,12 @@ export default function LoginScreen(props){
           width: "100%",
           height: "20%",
           alignItems: "center",
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         <TouchableOpacity
           style={styles.loginButton}
-          onPress={ loginPressed /*onLoginTest*/ }
+          onPress={loginPressed/*onLoginTest*/}
         >
           <Text style={styles.textButton}>INICIAR SESIÓN</Text>
         </TouchableOpacity>
@@ -342,7 +332,7 @@ export default function LoginScreen(props){
         style={{
           alignItems: "center",
           justifyContent: "center",
-          paddingTop:20
+          paddingTop: 20,
         }}
       >
         <Text style={{ color: "#40434E" }}>Al continuar esta aceptando</Text>
@@ -350,14 +340,18 @@ export default function LoginScreen(props){
           <Text style={{ color: "#40434E" }}>los </Text>
           <Text style={styles.conditionsText}>terminos y condiciones</Text>
         </View>
-        <Text style={{ color: "#40434E" }}>de uso y la politica de privacidad.</Text>
+        <Text style={{ color: "#40434E" }}>
+          de uso y la politica de privacidad.
+        </Text>
       </View>
       <Loader loading={loading} />
       <Modal isVisible={modalVisible}>
-        {<RenderModalContent
-          setVisible={setVisible}
-          navigation={props.navigation}
-        />}
+        {
+          <RenderModalContent
+            setVisible={setVisible}
+            navigation={props.navigation}
+          />
+        }
       </Modal>
     </View>
   );
@@ -366,75 +360,73 @@ export default function LoginScreen(props){
 LoginScreen.navigationOptions = ({ navigation }) => ({
   title: "Iniciar Sesion",
   headerStyle: {
-    backgroundColor: Colors.tabIconSelected
+    backgroundColor: colors.tabIconSelected,
   },
   headerTintColor: "#fff",
   headerTitleStyle: {
     fontWeight: "bold",
     textAlign: "center",
-    flex: 1
+    flex: 1,
   },
-  
 });
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    paddingTop: Platform.OS === "android" ? 25 : 0
+    paddingTop: Platform.OS === "android" ? 25 : 0,
   },
   logo: {
     width: 100,
-    height: 100
+    height: 100,
   },
   loginButton: {
     width: "70%",
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.tabIconSelected,
+    backgroundColor: colors.tabIconSelected,
     borderRadius: 10,
-    marginBottom: 5
+    marginBottom: 5,
   },
   registerButton: {
     width: "50%",
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Colors.tabIconSelected,
+    backgroundColor: colors.tabIconSelected,
     borderRadius: 10,
-    marginTop: 5
+    marginTop: 5,
   },
   input: {
     paddingLeft: 10,
     width: "80%",
-    height: 40
+    height: 40,
   },
   forgotPasswordText: {
     color: "blue",
-    textDecorationLine: "underline"
+    textDecorationLine: "underline",
   },
   textButton: {
     fontWeight: "bold",
-    color: "white"
+    color: "white",
   },
   conditionsText: {
     color: "blue",
-    textDecorationLine: "underline"
+    textDecorationLine: "underline",
   },
   registerSection: {
     alignItems: "center",
     justifyContent: "center",
     height: "20%",
-    width: "100%"
+    width: "100%",
   },
   viewPasswordInput: {
     width: "80%",
     flexDirection: "row",
     borderColor: "#a4a4a4",
     borderWidth: 1,
-    borderRadius: 5
+    borderRadius: 5,
   },
 
   button: {
@@ -442,24 +434,24 @@ const styles = StyleSheet.create({
     height: 40,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   icon: {
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   modalContent: {
-    backgroundColor:'white',
+    backgroundColor: "white",
     padding: 10,
     justifyContent: "space-between",
-    borderRadius: 5
+    borderRadius: 5,
   },
   inputStyleModal: {
     padding: 5,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 5,
     borderColor: "#a4a4a4",
-    borderWidth:1,
+    borderWidth: 1,
     color: "#a4a4a4",
     height: 45,
     width: "100" + "%",
@@ -472,18 +464,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
     width: "100" + "%",
-    height: 60
+    height: 60,
   },
   loginBtnText: {
-    color: 'white',
-    fontWeight: 'bold'
+    color: "white",
+    fontWeight: "bold",
   },
   resetBtn: {
-    backgroundColor: Colors.tabIconSelected,
+    backgroundColor: colors.tabIconSelected,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
     width: "40" + "%",
-    height: 45
-  }
+    height: 45,
+  },
 });

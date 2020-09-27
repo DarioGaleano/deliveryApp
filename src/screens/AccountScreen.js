@@ -1,6 +1,6 @@
 import React, { Component, useReducer, useEffect, useState } from 'react';
 import { TextInput, View, TouchableOpacity, StyleSheet, Text, Image, SafeAreaView, FlatList,AsyncStorage } from 'react-native';
-import Colors from '../constants/Colors'
+import {colors} from '../constants/'
 
 export default function AccountScreen(props){
 
@@ -10,7 +10,7 @@ export default function AccountScreen(props){
     }
     return(
         <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-            <TouchableOpacity style={{backgroundColor: Colors.tabIconSelected, height: '10%', width:'90%', borderRadius:50, justifyContent:'center', alignItems:'center'}}
+            <TouchableOpacity style={{backgroundColor: colors.tabIconSelected, height: '10%', width:'90%', borderRadius:50, justifyContent:'center', alignItems:'center'}}
                 onPress={closeSesion}
             >
               <Text style= {{color:'white', fontWeight:'bold'}}>Cerrar Sesion</Text>
