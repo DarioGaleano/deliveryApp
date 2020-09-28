@@ -1,9 +1,10 @@
-import Product from './Product'
-import Loader from './Loader'
-import Search from './Search'
-import TabBarIcon from './TabBarIcon'
-import ButtonBottom from './ButtonBottom'
-import StyledText from './StyledText'
+import Product from './product'
+import Loader from './loader'
+import Search from './search'
+import TabBarIcon from './tab-bar-icon'
+import ButtonBottom from './button-bottom'
+import StyledText from './styled-text'
+import ModalPopUp from './modal-pop-up'
 
 export {
     Product,
@@ -11,5 +12,6 @@ export {
     Search,
     TabBarIcon,
     ButtonBottom,
+    ModalPopUp,
     StyledText
 }

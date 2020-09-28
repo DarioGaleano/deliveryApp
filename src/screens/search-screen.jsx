@@ -1,12 +1,12 @@
 import React,{useState, useEffect, useReducer} from 'react';
 import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native';
 import { Search, Product, Loader } from '../components'
-import data from '../screens/data.json'
+import { data } from '../constants'
 import Toast from "react-native-root-toast";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { productServices } from '../services'
 
-export default function SearchScreen(props) { 
+export default function SearchScreen({ route, navigation }) { 
     
   const [products, dispatch] = useReducer((myArray, { type, value }) => {
     switch (type) {

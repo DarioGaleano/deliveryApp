@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image, AsyncStorage } from "react-native";
-import Loader from './Loader'
+import Loader from './loader'
 import Toast from "react-native-root-toast";
 import {Ionicons} from '@expo/vector-icons'
 import Colors from '../constants/Colors';

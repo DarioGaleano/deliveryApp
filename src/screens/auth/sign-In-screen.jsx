@@ -8,7 +8,6 @@ import Toast from "react-native-root-toast";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Loader } from '../../components'
 import { userServices } from '../../services'
-import { StackActions } from "react-navigation";
 
 let index = 0;
 
@@ -250,11 +249,7 @@ export default function SignInScreen (props) {
   };
 
   return (
-    <KeyboardAwareScrollView
-      resetScrollToCoords={{ x: 0, y: 0 }}
-      scrollEnabled
-      enableOnAndroid
-    >
+    
     <ScrollView contentContainerStyle={styles.container}>
       <View
         style={{
@@ -401,7 +396,6 @@ export default function SignInScreen (props) {
       <Loader loading={loading} />
       
       </ScrollView>
-    </KeyboardAwareScrollView>
   );
 }
 

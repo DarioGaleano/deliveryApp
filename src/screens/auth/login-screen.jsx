@@ -1,147 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
   AsyncStorage,
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-root-toast";
-import { StackActions } from "react-navigation";
-import { Loader } from '../../components'
-import Modal from "react-native-modal";
+import { Loader, ModalPopUp } from '../../components'
 import { colors } from '../../constants'
-import { userServices } from "../../services";
+import { userServices } from "../../services"
+import { AuthContext } from '../../context'
 
-function RenderButton(props) {
-  return (
-    <TouchableOpacity
-      disabled={props.sending}
-      style={[styles.resetBtn]}
-      onPress={props.onPress}
-    >
-      <Text style={styles.loginBtnText}>{props.text}</Text>
-    </TouchableOpacity>
-  );
-}
-
-function RenderModalContent(props) {
-  const [loading, setLoading] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [emailReset, setEmailReset] = useState("");
-
-  const sendMailTest = async () => {
-    props.navigation.navigate("forgot");
-    props.setVisible(false);
-  };
-
-  const sendMail = async () => {
-    props.navigation.navigate("forgot");
-    props.setVisible(false);
-    setLoading(true);
-    let params = "email=" + emailReset;
-    setSending(true);
-    try {
-      const { status, response } = await userServices.forgotPassword({ emailReset });
-      switch (status) {
-        case 200: {
-          if (response.code === 201) {
-            Toast.show(response.error, {
-              duration: Toast.durations.SHORT,
-              position: Toast.positions.BOTTOM,
-              shadow: true,
-              animation: true,
-              hideOnPress: true,
-              delay: 0,
-            });
-            setModalVisible(false);
-            props.navigation.navigate("forgot");
-          } else {
-            setModalVisible(false);
-            Toast.show(response.error, {
-              duration: Toast.durations.SHORT,
-              position: Toast.positions.BOTTOM,
-              shadow: true,
-              animation: true,
-              hideOnPress: true,
-              delay: 0,
-            });
-          }
-          setSending(false);
-          break;
-        }
-        default: {
-          setSending(false);
-          setLoading(false);
-          Toast.show(response.error, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            animation: true,
-            hideOnPress: true,
-            delay: 0,
-          });
-          break;
-        }
-      }
-    } catch (error) {
-      setLoading(false);
-      setSending(false);
-      Toast.show("Problemas al enviar o recibir los datos", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
-      });
-    }
-  };
-
-  return (
-    <View style={styles.modalContent}>
-      <View style={{ height: 40 }}>
-        <Text style={{}}>
-          Coloque su email y le enviaremos instrucciones para resetear su
-          contraseña.
-        </Text>
-      </View>
-      <Loader message="Enviando código" />
-      <View style={{ height: 60 }}>
-        <TextInput
-          style={[styles.inputStyleModal]}
-          underlineColorAndroid="transparent"
-          placeholder="Coloque su email"
-          maxLength={50}
-          keyboardType="email-address"
-          returnKeyLabel={"next"}
-          onChangeText={(emailReset) => setEmailReset(emailReset)}
-        />
-      </View>
-      <View style={styles.buttonsSpaceResetPassword}>
-        <RenderButton
-          text={"Enviar"}
-          onPress={/*sendMail*/ sendMailTest}
-          sending={sending}
-        />
-        <RenderButton
-          text={"Cancelar"}
-          onPress={() => props.setVisible(false)}
-          sending={sending}
-        />
-      </View>
-    </View>
-  );
-}
-
-export default function LoginScreen(props) {
+export default function LoginScreen({route, navigation}) {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const { signIn } = React.useContext(AuthContext);
 
   const validate = () => {
     if (!user) {
@@ -169,16 +51,13 @@ export default function LoginScreen(props) {
 
   const loginPressed = async () => {
     if (!validate()) return false;
-    setLoading(true);
-    console.log(user);
-    console.log(password);
     try {
+      setLoading(true);
       const { status, response } = await userServices.login({user, password});
-      console.log(response.status);
-      console.log(response);
+      setLoading(false);      
+      console.log('response',{ status , response});
       if (status === 200) {
         if (response.error) {
-          setLoading(false);
           Toast.show(response.error, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
@@ -189,10 +68,6 @@ export default function LoginScreen(props) {
           });
           return;
         } else {
-          setLoading(false);
-          await AsyncStorage.setItem("token", response.token);
-          console.log(response);
-
           Toast.show("Bienvenido Sr(a).  " + response.user.name, {
             duration: Toast.durations.LONG,
             position: Toast.positions.BOTTOM,
@@ -201,10 +76,9 @@ export default function LoginScreen(props) {
             hideOnPress: true,
             delay: 0,
           });
-          props.navigation.navigate("App");
+          signIn({ token: response.token, username:response.user.name})
         }
       } else {
-        setLoading(false);
         Toast.show(response.error, {
           duration: Toast.durations.LONG,
           position: Toast.positions.BOTTOM,
@@ -228,23 +102,18 @@ export default function LoginScreen(props) {
     }
   };
 
-  const _onPressFogetPassword = () => setModalVisible(!modalVisible);
-
-  const onLoginTest = async () => {
-    const token = "123";
-    AsyncStorage.setItem("token", token);
-    props.navigation.navigate("home");
-  };
-
   const setVisible = (visible) => {
     setModalVisible(visible);
   };
 
   return (
     <View style={styles.container}>
+      <ScrollView>
+      <KeyboardAvoidingView >
+
       <View
         style={{
-          height: "20%",
+          height: 100,
           justifyContent: "center",
           alignItems: "center",
         }}
@@ -261,7 +130,7 @@ export default function LoginScreen(props) {
       <View
         style={{
           width: "100%",
-          height: "20%",
+          height: 100,
           alignItems: "center",
           justifyContent: "space-around",
         }}
@@ -301,7 +170,7 @@ export default function LoginScreen(props) {
       <View
         style={{
           width: "100%",
-          height: "20%",
+          height: 100,
           alignItems: "center",
           justifyContent: "center",
         }}
@@ -313,7 +182,7 @@ export default function LoginScreen(props) {
           <Text style={styles.textButton}>INICIAR SESIÓN</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={_onPressFogetPassword}>
+        <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
           <Text style={styles.forgotPasswordText}>Olvide mi contraseña</Text>
         </TouchableOpacity>
       </View>
@@ -322,7 +191,7 @@ export default function LoginScreen(props) {
         <Text style={{ color: "#40434E" }}>¿No tienes cuenta?</Text>
         <TouchableOpacity
           style={styles.registerButton}
-          onPress={() => props.navigation.navigate("signin")}
+          onPress={() => navigation.navigate("signin")}
         >
           <Text style={styles.textButton}>REGISTRARSE</Text>
         </TouchableOpacity>
@@ -332,7 +201,7 @@ export default function LoginScreen(props) {
         style={{
           alignItems: "center",
           justifyContent: "center",
-          paddingTop: 20,
+          paddingTop: 100,
         }}
       >
         <Text style={{ color: "#40434E" }}>Al continuar esta aceptando</Text>
@@ -344,31 +213,13 @@ export default function LoginScreen(props) {
           de uso y la politica de privacidad.
         </Text>
       </View>
+      </KeyboardAvoidingView>
+      </ScrollView>
       <Loader loading={loading} />
-      <Modal isVisible={modalVisible}>
-        {
-          <RenderModalContent
-            setVisible={setVisible}
-            navigation={props.navigation}
-          />
-        }
-      </Modal>
+      <ModalPopUp isVisible={modalVisible} setVisible={setVisible} navigation={navigation}/>
     </View>
   );
 }
-
-LoginScreen.navigationOptions = ({ navigation }) => ({
-  title: "Iniciar Sesion",
-  headerStyle: {
-    backgroundColor: colors.tabIconSelected,
-  },
-  headerTintColor: "#fff",
-  headerTitleStyle: {
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1,
-  },
-});
 
 const styles = StyleSheet.create({
   container: {
@@ -418,7 +269,7 @@ const styles = StyleSheet.create({
   registerSection: {
     alignItems: "center",
     justifyContent: "center",
-    height: "20%",
+    height:100,
     width: "100%",
   },
   viewPasswordInput: {

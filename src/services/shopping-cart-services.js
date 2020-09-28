@@ -6,7 +6,7 @@ const getProductShoppingCart = async() => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + (await AsyncStorage.getItem("token"))
+          Authorization: "Bearer " + await AsyncStorage.getItem("token")
         },
       });
       const response = await request.json();

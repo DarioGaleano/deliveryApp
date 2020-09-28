@@ -27,7 +27,8 @@ const tips=[
     { amount:'250', key:index++, active:false },
     { amount:'Otro', key:index++, active:false },
 ]
-export default function PaymentScreen(props){
+export default function PaymentScreen({ route, navigation }){
+    const { totalAmount } = route.params;
     const [paymentType, setPaymentType]=useState('paypal')
     const [tip, setTip]=useState('0.00')
     const [active, setActive]=useState('')
@@ -98,7 +99,7 @@ export default function PaymentScreen(props){
                         changeTip={setNewTip}
                     />
                     }
-                    keyExtractor={item=> item.key}
+                    keyExtractor={item=> item.key.toString()}
                 />
                 </View>
             </View>
@@ -109,7 +110,7 @@ export default function PaymentScreen(props){
                 </View>
                 <View style={{height:'20%', justifyContent:'space-between', flexDirection:'row'}}>
                     <Text style={styles.text}>Costo de productos</Text>
-                <Text style={styles.text}>${props.navigation.getParam('totalAmount')}</Text>
+                <Text style={styles.text}>${totalAmount}</Text>
                 </View>
                 <View style={{height:'20%', justifyContent:'space-between', flexDirection:'row'}}>
                     <Text style={styles.text}>Costo de envio</Text>
@@ -128,30 +129,7 @@ export default function PaymentScreen(props){
         </View>
     )
 }
-PaymentScreen.navigationOptions = {
-  title: 'Tu pedido',
-  headerStyle: {
-    backgroundColor: colors.tabIconSelected,
-  },
-  headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-          textAlign:"center", 
-          flex:1 
-        },
-  headerRight: (
-    <View>
-    </View>
-  ),
-  headerLeft: (
-    <TouchableOpacity onPress>
-        <Ionicons
-            name={'ios-arrow-round-back'}
-            color={'black'}
-        />
-    </TouchableOpacity>
-  ),
-};
+
 const styles=StyleSheet.create({
     container:{
         flex:1,

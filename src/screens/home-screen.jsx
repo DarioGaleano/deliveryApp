@@ -15,7 +15,7 @@ const categorys=[
 
 ]
 
-export default function HomeScreen(props) { 
+export default function HomeScreen({ route, navigation }) { 
   const [products, dispatch] = useReducer((myArray, { type, value }) => {
     switch (type) {
       case "add":
@@ -139,7 +139,12 @@ export default function HomeScreen(props) {
     
   }
 
-  useEffect(()=>{getProducts(page)},[])
+  useEffect(()=>{
+    async function init(){
+      getProducts(page)
+    }
+    init()
+  },[])
 
   console.log("setStartSearch",startSearch)
   
@@ -188,7 +193,7 @@ export default function HomeScreen(props) {
                 onPress={()=> setActive(item.item.key) }
               />
             }
-            keyExtractor={item=> item.key}
+            keyExtractor={item=> item.key.toString()}
           />
       </View>
         <FlatList
