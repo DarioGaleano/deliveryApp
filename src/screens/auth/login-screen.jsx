@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import {
   View,
   Text,
@@ -7,98 +7,91 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ScrollView,
-  AsyncStorage,
+  ToastAndroid,
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Toast from "react-native-root-toast";
 import { Loader, ModalPopUp } from '../../components'
 import { colors } from '../../constants'
 import { userServices } from "../../services"
 import { AuthContext } from '../../context'
+import { filterNumber, onBlurEmail, FormValidator } from '../../helpers'
+
+const validator=new FormValidator([
+  {
+    field: "email",
+    method: 'isEmpty',
+    validWhen: false,
+    message: "Ingrese email",
+  },
+  {
+    field: "email",
+    method: "isEmail",
+    validWhen: true,
+    message: "Email invalido",
+  },
+  {
+    field: "password",
+    method: 'isEmpty',
+    validWhen: false,
+    message: "Ingrese contraseña",
+  }
+])
+
 
 export default function LoginScreen({route, navigation}) {
-  const [user, setUser] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const { signIn } = React.useContext(AuthContext);
+  
+  const [errorEmail, setErrorEmail]=useState('')
+  const [errorPassword, setErrorPassword]=useState('')
+
+  const showToastMessage = (message) => {
+    ToastAndroid.showWithGravity(message, ToastAndroid.LONG, ToastAndroid.BOTTOM)
+  }
 
   const validate = () => {
-    if (!user) {
-      Toast.show("Debe ingresar su nombre de usuario o correo electronico", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
-      });
-      return false;
-    } else if (!password) {
-      Toast.show("Debe ingresar su contraseña", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
-      });
-      return false;
-    } else return true;
+    const validation=validator.validate({
+      email,
+      password
+    })
+
+    setErrorEmail(validation.email.message)
+    setErrorPassword(validation.password.message)
+    if(validation.isValid)
+      return true;
+    return false;
   };
 
   const loginPressed = async () => {
-    if (!validate()) return false;
+    
+    if (!validate()) 
+      return false;
+
     try {
       setLoading(true);
-      const { status, response } = await userServices.login({user, password});
+      const { status, response } = await userServices.login({user:email.toLowerCase(), password});
       setLoading(false);      
       console.log('response',{ status , response});
       if (status === 200) {
         if (response.error) {
-          Toast.show(response.error, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0,
-          });
+          showToastMessage(response.error)
           return;
         } else {
-          Toast.show("Bienvenido Sr(a).  " + response.user.name, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0,
-          });
-          signIn({ token: response.token, username:response.user.name})
+          showToastMessage(`Bienvenido Sr(a). ${response.user.name}`)
+          signIn({ token: response.token, user:response.user})
         }
       } else {
-        Toast.show(response.error, {
-          duration: Toast.durations.LONG,
-          position: Toast.positions.BOTTOM,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 0,
-        });
+        showToastMessage(response.error)
       }
     } catch (error) {
-      console.log(error);
+     console.log(error);
       setLoading(false);
-      Toast.show("Problemas al enviar o recibir los datos", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
-      });
+      showToastMessage("Problemas al enviar o recibir los datos")
     }
   };
 
@@ -118,35 +111,30 @@ export default function LoginScreen({route, navigation}) {
           alignItems: "center",
         }}
       >
-        {
-          /*<Image
-          style={styles.logo}
-          source={require("../assets/images/logo-remeny.png")}
-        />*/
           <Text>Market Place</Text>
-        }
       </View>
 
       <View
         style={{
           width: "100%",
-          height: 100,
+          height: 110,
           alignItems: "center",
           justifyContent: "space-around",
         }}
       >
         <TextInput
-          style={[
-            styles.input,
-            { borderColor: "#a4a4a4", borderWidth: 1, borderRadius: 5 },
-          ]}
-          onChangeText={(text) => setUser(text.toLowerCase())}
-          placeholder={"Correo o nombre de usuario"}
+          style={[styles.input, { borderColor: "#a4a4a4", borderWidth: 1, borderRadius: 5 },]}
+          value={email}
+          onBlur={() => setErrorEmail(onBlurEmail(email))}
+          onChangeText={(text) => setEmail(text.trim())}
+          placeholder={"Correo electronico"}
           placeholderTextColor="#a4a4a4"
         />
+        { errorEmail===''? null : <Text style={{fontSize:12, color:"tomato", width:"100%", paddingLeft:10}}>{errorEmail}</Text> }
         <View style={styles.viewPasswordInput}>
           <TextInput
-            style={styles.input}
+            style={[styles.input, {width:"80%"}]}
+            onBlur={() => setErrorPassword(password!==''?'':'Ingrese contraseña')}
             onChangeText={(text) => setPassword(text)}
             placeholder={"Contraseña"}
             placeholderTextColor="#a4a4a4"
@@ -165,6 +153,7 @@ export default function LoginScreen({route, navigation}) {
             </View>
           </TouchableOpacity>
         </View>
+        { errorPassword===''? null : <Text style={{fontSize:12, color:"tomato", width:"100%", paddingLeft:10}}>{errorPassword}</Text> }
       </View>
 
       <View
@@ -226,6 +215,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingTop: Platform.OS === "android" ? 25 : 0,
+    paddingHorizontal:25
   },
   logo: {
     width: 100,
@@ -251,7 +241,7 @@ const styles = StyleSheet.create({
   },
   input: {
     paddingLeft: 10,
-    width: "80%",
+    width: "100%",
     height: 40,
   },
   forgotPasswordText: {
@@ -273,7 +263,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   viewPasswordInput: {
-    width: "80%",
+    width: "100%",
     flexDirection: "row",
     borderColor: "#a4a4a4",
     borderWidth: 1,

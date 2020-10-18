@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image, AsyncStorage } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image, AsyncStorage, ToastAndroid, Alert } from "react-native";
 import Loader from './loader'
-import Toast from "react-native-root-toast";
 import {Ionicons} from '@expo/vector-icons'
 import Colors from '../constants/Colors';
 import { shoppingCartServices } from '../services'
-
+import formatAmount from '../helpers/formatAmount'
+import { BadgeContext } from '../context'
 export default function Product(props) {
   const [loading, setLoading]=useState(false)
   const [count, setCont]=useState(1);
@@ -13,100 +13,61 @@ export default function Product(props) {
   useEffect(()=>{
     props.cart?setCont(props.quantity):setCont(count)
   },[])
-    
+  const { Increment, Decrement }=useContext(BadgeContext)
+
+  const showToastMessage = (message) => {
+    ToastAndroid.showWithGravity(message, ToastAndroid.LONG, ToastAndroid.BOTTOM)
+  }
+
   const addToShoppingCart=async ()=>{
-      await setLoading(true)
-      console.log("TOKEEEN",await AsyncStorage.getItem("token"))
+      setLoading(true)
+      
       try {
           const { status, response } = await shoppingCartServices.addProductShoppingCart({ id: props.id, count });
           setLoading(false)
+         
           setCont(1)
-          console.log("AQUI",response)
+          console.log({ status, response })
           if (status === 200) {
             if (response.error) {
-              Toast.show(response.error.message, {
-                duration: Toast.durations.LONG,
-                position: Toast.positions.BOTTOM,
-                shadow: true,
-                animation: true,
-                hideOnPress: true,
-                delay: 0
-              });
+              console.log('error1',response)
+              showToastMessage(response.error.message)
+            
               return;
             } else {
-              Toast.show("Añadido a tu carrito con exito", {
-                  duration: Toast.durations.LONG,
-                  position: Toast.positions.BOTTOM,
-                  shadow: true,
-                  animation: true,
-                  hideOnPress: true,
-                  delay: 0
-                });               
+              console.log('AÑADIENDO')
+              Increment({number:count})
+              showToastMessage("Añadido a tu carrito con exito")               
             }
           } else {
-            Toast.show(response.error, {
-              duration: Toast.durations.LONG,
-              position: Toast.positions.BOTTOM,
-              shadow: true,
-              animation: true,
-              hideOnPress: true,
-              delay: 0
-            });
+            console.log('error2',response)
+            showToastMessage(response.message)
           }
         } catch (error) {
-          console.log(error)
-          Toast.show("Problemas al enviar o recibir los datos", {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0
-          });
+          console.log('errorCatch',error)
+          showToastMessage("Problemas al enviar o recibir los datos")
         }
   };
     
     const incrementProduct=async ()=>{
-      console.log(props.id)
       try {
         const { status, response } = await shoppingCartServices.incrementProductShoppingCart({ id: props.id });
-
-        console.log("AQUI CART",response.cart.totalAmount)
         if (status === 200) {
           if (response.error) {
-            Toast.show(response.error.message, {
-              duration: Toast.durations.LONG,
-              position: Toast.positions.BOTTOM,
-              shadow: true,
-              animation: true,
-              hideOnPress: true,
-              delay: 0
-            });
+            
+            showToastMessage(response.error.message);
             return;
           } else {
-            await setCont(count+1);     
+            setCont(count+1);  
+            Increment({number:1})   
             props.newTotal(response.cart.totalAmount)          
           }
         } else {
-          Toast.show(response.error, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0
-          });
+          showToastMessage(response.error);
         }
       } catch (error) {
         console.log(error)
-        Toast.show("Problemas al enviar o recibir los datos", {
-          duration: Toast.durations.LONG,
-          position: Toast.positions.BOTTOM,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 0
-        });
+        showToastMessage("Problemas al enviar o recibir los datos");
       }
   }
   
@@ -117,86 +78,63 @@ export default function Product(props) {
       
       if (status === 200) {
         if (response.error) {
-          Toast.show(response.error.message, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0
-          });
+          showToastMessage(response.error.message);
           return;
         } else {
-          await setCont(count-1);     
+          setCont(count-1);    
+          console.log('AÑADIENDO')
+          Decrement({number:1}) 
           props.newTotal(response.cart.totalAmount)                    
         }
       } else {
-        Toast.show(response.error, {
-          duration: Toast.durations.LONG,
-          position: Toast.positions.BOTTOM,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 0
-        });
+        showToastMessage(response.error);
       }
     } catch (error) {
       console.log(error)
-      Toast.show("Problemas al enviar o recibir los datos", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
+      showToastMessage("Problemas al enviar o recibir los datos");
     }
   }
 
-  const removeProduct=async ()=>{
+  const removeProduct = ()=>{
     console.log(props.id)
-    try {
-      const { status, response } = await shoppingCartServices.removeProductShoppingCart({ id: props.id });
-      console.log("AQUI",response)
-      if (status === 200) {
-        if (response.error) {
-          Toast.show(response.error.message, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0
-          });
-          return;
-        } else {
-          props.setProduct(response.cart.items, response.cart.totalAmount)              
-        }
-      } else {
-        Toast.show(response.error, {
-          duration: Toast.durations.LONG,
-          position: Toast.positions.BOTTOM,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 0
-        });
-      }
-    } catch (error) {
-      console.log(error)
-      Toast.show("Problemas al enviar o recibir los datos", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-    }
+    Alert.alert(
+      'Eliminar producto',
+      `Esta seguro de eliminar ${props.name} de su carrito de compras?`,
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel'
+        },
+        { 
+          text: 'OK', 
+          onPress: async () => {
+            try {
+              const { status, response } = await shoppingCartServices.removeProductShoppingCart({ id: props.id });
+              if (status === 200) {
+                if (response.error) {
+                  showToastMessage(response.error.message);
+                  return;
+                } else {
+                  Decrement({number:count})
+                  props.setProduct(response.cart.items, response.cart.totalAmount)              
+                }
+              } else {
+                showToastMessage(response.error);
+              }
+            } catch (error) {
+              console.log(error)
+              showToastMessage("Problemas al enviar o recibir los datos");
+            }
+          }}
+      ],
+      { cancelable: false }
+    );
   }
-
 
     return (
+      <>
+     
         <TouchableOpacity style={styles.container} activeOpacity={0.9}>
             <View style={{width: !props.cart?'40%':'50%',height: '100%', justifyContent:'center', alignItems:'center'}}>
                 <Image
@@ -206,12 +144,12 @@ export default function Product(props) {
                     resizeMode={'contain'}
                 />
             </View>
-            <View style={{width: !props.cart?'60%':'40%',paddingHorizontal:"5%", height:'100%', justifyContent:'space-around', alignItems: 'flex-start'}}>
+            <View style={{width: !props.cart?'60%':'40%',paddingHorizontal:"5%", paddingTop:10, height:'100%', justifyContent:'space-around', alignItems: 'flex-start'}}>
                 <View style={{height:'10%', justifyContent:'center', alignItems:'center'}}>
                   <Text>{props.name}</Text>
                 </View>
                 <View style={{height:'10%', justifyContent:'center', alignItems:'center'}}>
-                  <Text>Precio: {props.price}</Text>
+                  <Text style={{fontSize:13}}>{`Precio: $${formatAmount(props.price)}`}</Text>
                 </View>
                 <View style={{width: '100%',height:'30%', justifyContent: 'center', }}>
                     <View style={{width:'100%', height:'80%', flexDirection:'row', }}>
@@ -265,6 +203,7 @@ export default function Product(props) {
                 loading={loading}
             />
         </TouchableOpacity>
+        </>
     )
 }
 

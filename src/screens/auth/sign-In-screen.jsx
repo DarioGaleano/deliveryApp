@@ -1,255 +1,170 @@
 "use strict";
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView } from "react-native";
-import DatePicker from "react-native-datepicker";
-import ModalSelector from "react-native-modal-selector";
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, ToastAndroid } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Toast from "react-native-root-toast";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Loader } from '../../components'
 import { userServices } from '../../services'
-
-let index = 0;
-
-const data = [
-  { key: index++, section: true, label: "Code Area" },
-  { key: index++, label: "Venezuela", value: "+58" },
-  { key: index++, label: "Colombia", value: "+57" }
-];
+import { filterNumber, onBlurEmail, FormValidator } from '../../helpers'
 
 export default function SignInScreen (props) { 
+
+  const showToastMessage = (message) => {
+    ToastAndroid.showWithGravity(message, ToastAndroid.LONG, ToastAndroid.BOTTOM)
+  }
 
   const [name, setName] = useState('');
   const [lastName, setLastName] = useState('');
   const [userName, setUserName] = useState('');
   const [email, setEmail] = useState('');
   const [document, setDocument]= useState('')
-  const [code, setCode] = useState('+58');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress]=useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+
+  //Errors
+  const [errorName, setErrorName]=useState('')
+  const [errorLastName, setErrorLastName]=useState('')
+  const [errorUserName, setErrorUserName]=useState('')
+  const [errorEmail, setErrorEmail]=useState('')
+  const [errorDocument, setErrorDocument]=useState('')
+  const [errorPhoneNumber, setErrorPhoneNumber]=useState('')
+  const [errorAddress, setErrorAddress]=useState('')
+  const [errorPassword, setErrorPassword]=useState('')
+  const [errorPasswordConfirm, setErrorPasswordConfirm]=useState('')
+
+  const validator = new FormValidator([
+    {
+      field: "name",
+      method: 'isEmpty',
+      validWhen: false,
+      message: "Ingrese nombre",
+    },
+    {
+      field: "lastName",
+      method: 'isEmpty',
+      validWhen: false,
+      message: "Ingrese apellido",
+    },
+    {
+      field: "userName",
+      method: 'isEmpty',
+      validWhen: false,
+      message: "Ingrese nombre de usuario",
+    },
+    
+    {
+      field: "email",
+      method: 'isEmpty',
+      validWhen: false,
+      message: "Ingrese email",
+    },
+    {
+      field: "email",
+      method: "isEmail",
+      validWhen: true,
+      message: "Email invalido",
+    },
+    {
+      field: "document",
+      method: 'isEmpty',
+      validWhen: false,
+      message: "Ingrese numero de documento",
+    },
+    {
+      field: "phoneNumber",
+      method: 'isEmpty',
+      validWhen: false,
+      message: "Ingrese numero de telefono",
+    },
+    {
+      field: "address",
+      method: 'isEmpty',
+      validWhen: false,
+      message: "Ingrese dirección",
+    },
+    {
+      field: "password",
+      method: 'isEmpty',
+      validWhen: false,
+      message: "Ingrese contraseña",
+    },
+    {
+      field: "passwordConfirm",
+      method: 'isEmpty',
+      validWhen: false,
+      message: "Confirme su contraseña",
+    },
+    {
+      field: 'passwordConfirm',
+      method: (passwordConfirm) => passwordConfirm===password? true : false,
+      validWhen: true,
+      message: 'Las contraseñas no coinciden.'
+    },
+  ]);
 
   const validate = () => {
-    if (email==='') {
-      Toast.show("El registro debe contener un correo electrónico", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else if (!userName) {
-      Toast.show("El registro debe contener un nombre de usuario", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else if (!name) {
-      Toast.show("El registro debe contener su nombre", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else if (!lastName) {
-      Toast.show("El registro debe contener su apellido", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else if (!document) {
-      Toast.show("El registro debe tener su cedula", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else if (!code) {
-      Toast.show("El registro debe contener el código de su teléfono", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else if (!phoneNumber) {
-      Toast.show("El registro debe contener su teléfono", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else if (!address) {
-      Toast.show("El registro debe contener su dirección", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else if (!password) {
-      Toast.show("El registro debe contener su clave", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else if (!passwordConfirm) {
-      Toast.show("Debe confirmar su clave", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    } else {
-      setError(false);
-      return true;
-    }
-  };
+    const validation = validator.validate({
+      name,
+      lastName,
+      userName,
+      email,
+      document,
+      phoneNumber,
+      address,
+      password,
+      passwordConfirm
+    })
+    setErrorName(validation.name.message)
+    setErrorLastName(validation.lastName.message)
+    setErrorUserName(validation.userName.message)
+    setErrorEmail(validation.email.message)
+    setErrorDocument(validation.document.message)
+    setErrorPhoneNumber(validation.phoneNumber.message)
+    setErrorAddress(validation.address.message)
+    setErrorPassword(validation.password.message)
+    setErrorPasswordConfirm(validation.passwordConfirm.message)
 
-  const validateEmail= () => {
-    let email = email;
-    if (email !== "") {
-      let pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      return pattern.test(String(email).toLowerCase());
-    } else {
-      //this.ref.focus();
+    if(validation.isValid) 
       return true;
-    }
+
+    return false;
   }
 
-  const handleOnBlurEmail = () => {
-    if (!validateEmail()) {
-      Toast.show("Formato de correo electrónico es invalido", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-    }
-  };
-
   const register = async () => {
-    console.log("AQUI 1")
-    if (!validate()) {
-      setLoading(false);
+    
+    if (!validate())
       return false;
-    }
-    setLoading(true);
-
-    if (password !== passwordConfirm) {
-      setLoading(false);
-      Toast.show("La confirmación de su clave no coincide", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
-      return false;
-    }
-    let completeName=name+' '+lastName;
-    let completePhoneNumber=code+phoneNumber;
-    console.log(completeName)
-    console.log(email)
-    console.log(userName)
-    console.log(completePhoneNumber)
-    console.log(document)
-    console.log(address)
-    console.log(password)
+    
     try {
-      const { status, response } = await userServices.register({completeName, email, userName, completePhoneNumber, document, address, password});
+      setLoading(true)
+      const { status, response } = await userServices.register({name, lastName, email:email.toLowerCase(), userName, phoneNumber, document, address, password});
+      setLoading(false)
       console.log(response);
 
       if (status === 200) {
         if (response.error) {
-          await setLoading(false);
           console.log(response.error);
-          Toast.show(response.error.message, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0
-          });
+          showToastMessage(response.error.message);
           return;
         } else {
-          await setLoading(false);
-          Toast.show("Bienvenido Sr(a) " + name, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0
-          });
+          showToastMessage(`Bienvenido Sr(a) ${name}`);
           props.navigation.navigate("login");
         }
       } else {
-        await setLoading(false);
         console.log(response);
-        Toast.show(response.error.message, {
-          duration: Toast.durations.LONG,
-          position: Toast.positions.BOTTOM,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 0
-        });
+        showToastMessage(response.error.message);
       }
     } catch (error) {
       await setLoading(false);
       console.log(error)
-      Toast.show("Problemas al enviar o recibir los datos", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
+      showToastMessage("Problemas al enviar o recibir los datos");
     }
   };
 
   return (
-    
     <ScrollView contentContainerStyle={styles.container}>
       <View
         style={{
@@ -265,73 +180,75 @@ export default function SignInScreen (props) {
           <Text>Market Place</Text>
       }
       </View>
-      <View style={{ alignItems: "center", width: '100%', height:550, justifyContent: 'space-around'}}>
+      <View style={{ alignItems: "center", width: '100%', justifyContent: 'space-around'}}>
         <TextInput
           style={styles.input}
           textContentType={"emailAddress"}
-          onBlur={handleOnBlurEmail}
-          onChangeText={text => setEmail(text.toLowerCase())}
+          onBlur={() => setErrorEmail(onBlurEmail(email))}
+          value={email}
+          onChangeText={(text)=> setEmail(text.trim())}
           placeholder={"Correo electronico"}
           placeholderTextColor="#a4a4a4"
         />
+        { errorEmail===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorEmail}</Text> }
         <TextInput
           style={styles.input}
+          onBlur={() => setErrorUserName(userName!==''?'':'Ingrese nombre de usuario')}
           onChangeText={text => setUserName(text)}
           placeholder={"Nombre de usuario"}
           placeholderTextColor="#a4a4a4"
+          
         />
+        { errorUserName===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorUserName}</Text> }
         <TextInput
           style={styles.input}
+          onBlur={() => setErrorName(name!==''?'':'Ingrese nombre')}
           onChangeText={text => setName(text)}
           placeholder={"Nombre"}
           placeholderTextColor="#a4a4a4"
         />
+        { errorName===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorName}</Text> }
         <TextInput
           style={styles.input}
+          onBlur={() => setErrorLastName(lastName!==''?'':'Ingrese apellido')}
           onChangeText={text => setLastName(text)}
           placeholder={"Apellido"}
           placeholderTextColor="#a4a4a4"
         />
+        { errorLastName===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorLastName}</Text> }
         <TextInput
           style={styles.input}
-          onChangeText={text => setDocument(text)}
+          onBlur={() => setErrorDocument(document!==''?'':'Ingrese documento')}
+          value={document}
+          onChangeText={text => setDocument(filterNumber(text))}
           placeholder={"Cedula"}
+          keyboardType={"phone-pad"}
           placeholderTextColor="#a4a4a4"
         />
+        { errorDocument===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorDocument}</Text> }
         <TextInput
           style={styles.input}
+          onBlur={() => setErrorAddress(address!==''?'':'Ingrese dirección')}
           onChangeText={text => setAddress(text)}
           placeholder={"Direccion"}
           placeholderTextColor="#a4a4a4"
         />
-        <View style={styles.phoneView}>
-          <ModalSelector
-            style={styles.selectCode}
-            data={data}
-            supportedOrientations={["portrait"]}
-            accessible={true}
-            scrollViewAccessibilityLabel={"Scrollable options"}
-            cancelButtonAccessibilityLabel={"Cancel Button"}
-            onChange={text => setCode(text.value)}
-          >
-            <TextInput
-              editable={false}
-              placeholder={code}
-              placeholderTextColor={'#a4a4a4'}
-            />
-          </ModalSelector>
+        { errorAddress===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorAddress}</Text> }
           <TextInput
-            style={styles.inputPhone}
+            style={styles.input}
+            onBlur={() => setErrorPhoneNumber(phoneNumber!==''?'':'Ingrese numero de telefono')}
             placeholder="Numero de telefono"
+            value={phoneNumber}
             placeholderTextColor="#a4a4a4"
             keyboardType={"phone-pad"}
-            maxLength={10}
-            onChangeText={text => setPhoneNumber(text)}
+            maxLength={11}
+            onChangeText={text => setPhoneNumber(filterNumber(text))}
           />
-        </View>
+          { errorPhoneNumber===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorPhoneNumber}</Text> }
         <View style={styles.viewPasswordInput}>
           <TextInput
             style={styles.inputPassword}
+            onBlur={() => setErrorPassword(password!==''?'':'Ingrese contraseña')}
             placeholderTextColor="#a4a4a4"
             onChangeText={text => setPassword(text)}
             placeholder={"Contraseña"}
@@ -350,10 +267,12 @@ export default function SignInScreen (props) {
             </View>
           </TouchableOpacity>
         </View>
+        { errorPassword===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorPassword}</Text> }
         <View style={styles.viewPasswordInput}>
           <TextInput
             style={styles.inputPassword}
             placeholderTextColor="#a4a4a4"
+            onBlur={() => setErrorPasswordConfirm(passwordConfirm===''?'Valide su contraseña': password!==passwordConfirm?'Las contraseñas deben coincidir':'')}
             onChangeText={text => setPasswordConfirm(text)}
             placeholder={"Confirmar contraseña"}
             secureTextEntry={!passwordVisible}
@@ -373,6 +292,7 @@ export default function SignInScreen (props) {
             </View>
           </TouchableOpacity>
         </View>
+        { errorPasswordConfirm===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorPasswordConfirm}</Text> }
         <View style={{ width: "100%", alignItems: "center", paddingTop:20 }}>
         <TouchableOpacity style={styles.sendButton} onPress={register}>
           <Text style={styles.textButton}>REGISTRARSE</Text>
@@ -399,30 +319,6 @@ export default function SignInScreen (props) {
   );
 }
 
-SignInScreen.navigationOptions = ({ navigation }) => ({
-  title: "Crear Cuenta",
-  headerStyle: {
-    backgroundColor: "rgb(26, 23, 152)"
-  },
-  headerTintColor: "#fff",
-  headerTitleStyle: {
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1
-  },
-  headerRight: <View></View>,
-  headerLeft: (
-    <TouchableOpacity onPress={() => navigation.goBack(null)}>
-      <Ionicons
-        name={"ios-arrow-back"}
-        size={30}
-        style={{ paddingLeft: 10 }}
-        color="white"
-      />
-    </TouchableOpacity>
-  )
-});
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -448,7 +344,9 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: "#a4a4a4",
     borderWidth: 1,
-    borderRadius: 5
+    borderRadius: 5,
+    marginTop:5
+    
   },
   inputPassword: {
     paddingLeft: 10,
@@ -522,7 +420,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderColor: "#a4a4a4",
     borderWidth: 1,
-    borderRadius: 5
+    borderRadius: 5,
+    marginTop:5
   },
   button: {
     width: "20%",

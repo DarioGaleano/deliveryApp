@@ -6,7 +6,7 @@ const getProductShoppingCart = async() => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + await AsyncStorage.getItem("token")
+          Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
         },
       });
       const response = await request.json();
@@ -21,7 +21,7 @@ const addProductShoppingCart = async ({ id, count }) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + (await AsyncStorage.getItem("token")),
+      Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
     },
     body: JSON.stringify({
       product: id,
@@ -40,7 +40,7 @@ const incrementProductShoppingCart = async ({ id }) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + (await AsyncStorage.getItem("token")),
+      Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
     },
     body: JSON.stringify({
       item: id,
@@ -58,7 +58,7 @@ const decrementProductShoppingCart = async ({ id }) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + (await AsyncStorage.getItem("token")),
+      Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
     },
     body: JSON.stringify({
       item: id,
@@ -76,7 +76,7 @@ const removeProductShoppingCart = async ({ id }) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + (await AsyncStorage.getItem("token")),
+      Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
     },
     body: JSON.stringify({
       item: id,

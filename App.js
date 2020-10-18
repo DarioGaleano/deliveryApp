@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useMemo, useEffect, useReducer } from "react";
+import {  View,  Text } from 'react-native';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -6,9 +7,9 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { Ionicons } from '@expo/vector-icons';
 import { HomeStackScreen, ShoppingCartStackScreen, ProfileStackScreen } from "./src/navigation";
 import { colors } from "./src/constants";
-import { LoginScreen, SingInScreen, SplashScreen } from "./src/screens";
-import { AuthContext } from "./src/context";
-
+import { LoginScreen, SingInScreen, SplashScreen, ForgotPasswordScreen } from "./src/screens";
+import { AuthContext, BadgeContext } from "./src/context";
+import IconBadge from 'react-native-icon-badge';
 function App() {
   const Tab = createBottomTabNavigator();
   const AuthStack = createStackNavigator();
@@ -47,67 +48,87 @@ function App() {
     }
   );
 
+  const [stateBadge, badgeDispatch]=useReducer(
+    (prevState, action) => {
+      switch(action.type){
+        case "INCREMENT":{
+          return {
+            ...prevState,
+            number:prevState.number+action.number,
+          }
+        };
+        case "DECREMENT":{
+          return {
+            ...prevState,
+            number:prevState.number-action.number,
+          }
+        };
+        case "REMOVEALL":{
+          return {
+            ...prevState,
+            number:0,
+          }
+        };
+        case "SETSHOPINGCART":{
+          return {
+            ...prevState,
+            number:action.number
+          }
+        }
+      }
+    },
+    {
+      number:0
+    }
+  )
+
   useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
-      let userToken;
-
-      try {
-        userToken = await AsyncStorage.getItem("token");
-      } catch (e) {
-        // Restoring token failed
+      try{
+        let userToken = await AsyncStorage.getItem("token");
+        dispatch({ type: "RESTORE_TOKEN", token: userToken});
+      }catch(e){
+        console.log(e)
       }
-
-      // After restoring token, we may need to validate it in production apps
-
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
-      console.log('effect', userToken)
-      dispatch({ type: "RESTORE_TOKEN", token: userToken});
     };
-
     bootstrapAsync();
   }, []);
 
-  const authContext = React.useMemo(
-    () => ({
-      signIn: async ({ token, name }) => {
-        try {
-          await AsyncStorage.setItem("token", JSON.stringify(token));
-        } catch (e) {
-          console.log(e);
-        }
-        try {
-          await AsyncStorage.setItem("username", JSON.stringify(name));
-        } catch (e) {
-          console.log(e);
-        }
-        console.log('here')
+  const authContext = useMemo( () => ({
+    signIn: async ({ token, user }) => {
+      try {
+        await AsyncStorage.setItem("token", JSON.stringify(token));
+        await AsyncStorage.setItem("user", JSON.stringify(user));
+      } catch (e) {
+        console.log(e);
+      }
+      //console.log('user token: ', token);
+      dispatch({ type: "LOGIN", token: token, name: user.name });
+    },
+    signOut: async() => {
+      await AsyncStorage.removeItem('token');  
+      dispatch({ type: "LOGOUT" })
+    },
+  }),[]);
 
-        console.log('user token: ', token);
-        
-        dispatch({ type: "LOGIN", token: token, name: name });
-      },
-      signOut: async() => {
-        await AsyncStorage.removeItem('token');  
-        dispatch({ type: "LOGOUT" })
-      },
-      /*signUp: async (data) => {
-        dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
-      },*/
-    }),
-    []
-  );
-
-  /*if (state.isLoading) {
-    // We haven't finished checking for the token yet
-    return <SplashScreen />;
-  }*/
+  const badgeContext = useMemo( () => ({
+    Increment: async({number}) =>{
+      badgeDispatch({type: "INCREMENT", number: number})
+    },
+    Decrement: async({number}) => {
+      badgeDispatch({type: "DECREMENT", number: number})
+    },
+    SetQuantity: async({quantity}) => {
+      badgeDispatch({type:"SETSHOPINGCART", number:quantity})
+    }
+  }))
 
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-        {state.token === null ? (
+        {
+          state.isLoading? <SplashScreen /> : state.token === null ? (
           <AuthStack.Navigator>
             <AuthStack.Screen
               options={{
@@ -135,19 +156,56 @@ function App() {
               name="signin"
               component={SingInScreen}
             />
+             <AuthStack.Screen
+              options={{
+                headerStyle: {
+                  backgroundColor: colors.tabIconSelected,
+                },
+                headerTintColor: "#fff",
+                headerTitleAlign: "center",
+                headerTitleStyle: { fontWeight: "bold" },
+                headerTitle:'Restaurar contraseña'
+              }}
+              name="forgot"
+              component={ForgotPasswordScreen}
+            />
           </AuthStack.Navigator>
         ) : (
-          <Tab.Navigator screenOptions={({ route })=>({
+          <BadgeContext.Provider value={badgeContext}>
+            <Tab.Navigator screenOptions={({ route })=>({
               tabBarIcon: ({focused, color, size}) => {
                 let iconName;
                 if(route.name === 'Home'){
-                  iconName = focused ? 'ios-home' : 'md-home';
+                  iconName = 'ios-home';
                 }
                 else if(route.name === 'Cart'){
-                  iconName = focused ? 'ios-cart' : 'md-cart';
+                  iconName = 'ios-cart';
+                  return <View style={{width:30,flexDirection: 'row',alignItems: 'center',justifyContent: 'center',}}>
+                            <IconBadge
+                              MainElement={
+                                <Ionicons name={iconName} size={30} color={color} style={{zIndex:1}}/>
+                              }
+                              BadgeElement={
+                                <Text style={{color:'#FFFFFF', fontSize:8, }}>{stateBadge.number}</Text>
+                              }
+                              IconBadgeStyle={
+                                {
+                                  width:20,
+                                  height:20,
+                                  left:15,
+                                  marginTop:-5,
+                                  marginLeft:2,
+                                  zIndex:0,
+                                  borderRadius:10,
+                                  backgroundColor: 'red'
+                                }
+                              }
+                              Hidden={stateBadge.number===0}
+                              />
+                          </View> 
                 }
                 else if(route.name === 'Profile'){
-                  iconName = focused ?  'ios-person' : 'md-person'
+                  iconName = 'ios-person';
                 }
 
                 return <Ionicons name={iconName} size={size} color={color} />;
@@ -155,13 +213,21 @@ function App() {
             })}
             tabBarOptions={{
               activeTintColor:'tomato',
-              inactiveTintColor: 'gray'
+              inactiveTintColor: 'gray',
+              labelStyle:{
+                marginBottom:5,
+                marginTop:0
+              },
+              style:{
+                height:60
+              }
             }}
             >
             <Tab.Screen  name="Home" component={HomeStackScreen} />
             <Tab.Screen name="Cart" component={ShoppingCartStackScreen}/>
             <Tab.Screen name="Profile" component={ProfileStackScreen} />
           </Tab.Navigator>
+          </BadgeContext.Provider>
         )}
       </NavigationContainer>
     </AuthContext.Provider>

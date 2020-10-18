@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ToastAndroid
 } from "react-native";
 import Modal from "react-native-modal";
 import Loader from "./loader";
@@ -13,6 +14,11 @@ import { colors } from "../constants";
 export default function ModalPopUp(props) {
   const [loading, setLoading] = useState(false);
   const [emailReset, setEmailReset] = useState("");
+
+    
+  const showToastMessage = (message) => {
+    ToastAndroid.showWithGravity(message, ToastAndroid.LONG, ToastAndroid.BOTTOM)
+  }
 
   const sendMailTest = async () => {
     props.navigation.navigate("forgot");
@@ -24,59 +30,29 @@ export default function ModalPopUp(props) {
     props.setVisible(false);
     try {
       setLoading(true);
-      const { status, response } = await userServices.forgotPassword({
-        emailReset,
-      });
+      const { status, response } = await userServices.forgotPassword({ emailReset });
       setLoading(false);
-
       switch (status) {
         case 200: {
           if (response.code === 201) {
-            Toast.show(response.error, {
-              duration: Toast.durations.SHORT,
-              position: Toast.positions.BOTTOM,
-              shadow: true,
-              animation: true,
-              hideOnPress: true,
-              delay: 0,
-            });
+            showToastMessage(response.error);
             setModalVisible(false);
             props.navigation.navigate("forgot");
           } else {
             setModalVisible(false);
-            Toast.show(response.error, {
-              duration: Toast.durations.SHORT,
-              position: Toast.positions.BOTTOM,
-              shadow: true,
-              animation: true,
-              hideOnPress: true,
-              delay: 0,
-            });
+            showToastMessage(response.error);
           }
           break;
         }
         default: {
           setLoading(false);
-          Toast.show(response.error, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            animation: true,
-            hideOnPress: true,
-            delay: 0,
-          });
+          showToastMessage(response.error);
           break;
         }
       }
     } catch (error) {
       setLoading(false);
-      Toast.show("Problemas al enviar o recibir los datos", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
-      });
+      showToastMessage("Problemas al enviar o recibir los datos");
     }
   };
 

@@ -15,19 +15,22 @@ import {
   SafeAreaView,
   FlatList,
   AsyncStorage,
+  ToastAndroid
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-
-import Toast from "react-native-root-toast";
 import { Product, Loader, ButtonBottom } from "../components";
 import { colors } from "../constants";
 import { shoppingCartServices } from "../services";
-
+import formatAmount from '../helpers/formatAmount'
 export default function ShoppinCartScreen({ route, navigation }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState("");
+
+  const showToastMessage = (message) => {
+    ToastAndroid.showWithGravity(message, ToastAndroid.LONG, ToastAndroid.BOTTOM)
+  }
 
   const setProduct = async (data, newTotal) => {
     setTotal(newTotal);
@@ -48,14 +51,7 @@ export default function ShoppinCartScreen({ route, navigation }) {
             setLoading(false);
             if (status === 200) {
               if (response.error) {
-                Toast.show(response.error.message, {
-                  duration: Toast.durations.LONG,
-                  position: Toast.positions.BOTTOM,
-                  shadow: true,
-                  animation: true,
-                  hideOnPress: true,
-                  delay: 0,
-                });
+                showToastMessage(response.error.message);
                 return;
               } else {
                 let productsAux = [];
@@ -66,14 +62,7 @@ export default function ShoppinCartScreen({ route, navigation }) {
                 setProducts(productsAux);
               }
             } else {
-              Toast.show(response.error.message, {
-                duration: Toast.durations.LONG,
-                position: Toast.positions.BOTTOM,
-                shadow: true,
-                animation: true,
-                hideOnPress: true,
-                delay: 0,
-              });
+              showToastMessage(response.error.message);
             }
           }
         } catch (e) {
@@ -87,6 +76,14 @@ export default function ShoppinCartScreen({ route, navigation }) {
     }, [])
   );
 
+  const onSubmit = () => {
+    if(products.length===0)
+    {
+      showToastMessage('Debes agregar al menos un producto a tu carrito')
+      return;
+    }
+    navigation.navigate("payment", { totalAmount: total })
+  }
   return (
     <View style={styles.container}>
       <View
@@ -107,7 +104,7 @@ export default function ShoppinCartScreen({ route, navigation }) {
         </View>
         <View style={{ width: "70%", height: "70%", padding: 10 }}>
           <View>
-            <Text>Total a pagar: {total}</Text>
+            <Text>Total a pagar: {formatAmount(total)}</Text>
           </View>
         </View>
       </View>
@@ -137,10 +134,8 @@ export default function ShoppinCartScreen({ route, navigation }) {
       </View>
 
       <ButtonBottom
-        onPress={() =>
-          navigation.navigate("payment", { totalAmount: total })
-        }
-        style={{width:"80%", height:40, justifyContent:"center", alignitems:"center", borderWidth:1, borderColor:"#000"}}
+        onPress={onSubmit}
+        style={{width:"80%", height:40, justifyContent:"center", alignitems:"center", }}
         text={"Realizar Compra"}
       />
       <Loader loading={loading} />

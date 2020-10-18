@@ -6,11 +6,10 @@ import { Platform } from 'react-native';
 
 export default function SearchBar(props){
 
-    const [textInput, setTexInput]=useState(props.setTexInput);
-
+    const [search, setSearch]=useState(false)
     return (
-    <View style={styles.container}>
-      <TouchableOpacity style={[styles.button]} onPress={props.goBack}>
+    <View style={[styles.container, {marginBottom:search? 20:0}]}>
+      <TouchableOpacity style={[styles.button]} onPress={() => {props.goBack(); setSearch(false)}}>
           <View style={styles.icon}>
             {
               props.arrowBack?<Icon 
@@ -27,7 +26,7 @@ export default function SearchBar(props){
             placeholder={'Buscar producto'}
             value={props.setText}
             placeholderTextColor="#a4a4a4"
-            onSubmitEditing={()=>props.startSearch(true)}                        
+            onSubmitEditing={()=> {props.startSearch(true); setSearch(true)}}                        
             onKeyPress={ (event) => {
                 if(event.nativeEvent.key == "Enter"){
                     //console.log(event.nativeEvent.key) //called when multiline is true
@@ -38,7 +37,7 @@ export default function SearchBar(props){
                 }
             }}
         />
-        <TouchableOpacity style={[styles.button]} onPress={()=>props.startSearch(true)}>
+        <TouchableOpacity style={[styles.button]} onPress={()=> {props.startSearch(true); setSearch(true)}}>
           <View style={styles.icon}>
             <Icon 
               name={'ios-search'}

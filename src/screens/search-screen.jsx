@@ -1,8 +1,7 @@
 import React,{useState, useEffect, useReducer} from 'react';
-import { View, Text, ScrollView, StyleSheet, FlatList } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, FlatList, ToastAndroid } from 'react-native';
 import { Search, Product, Loader } from '../components'
 import { data } from '../constants'
-import Toast from "react-native-root-toast";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { productServices } from '../services'
 
@@ -27,6 +26,10 @@ export default function SearchScreen({ route, navigation }) {
   const [isFetching, setIsFetching]=useState(false)
   const [loading, setLoading]=useState(false)
 
+  const showToastMessage = (message) => {
+    ToastAndroid.showWithGravity(message, ToastAndroid.LONG, ToastAndroid.BOTTOM)
+  }
+
   const getProducts=async (page)=>{
     setLoading(true)
     setIsFetching(true)
@@ -40,14 +43,7 @@ export default function SearchScreen({ route, navigation }) {
       if (status === 200) {
         if (response.error) {
           setLoading(false )
-          Toast.show(response.error.message, {
-            duration: Toast.durations.LONG,
-            position: Toast.positions.BOTTOM,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-            delay: 0
-          });
+          showToastMessage(response.error.message);
           return;
         } else {
           setLoading(false)
@@ -59,26 +55,12 @@ export default function SearchScreen({ route, navigation }) {
         }
       } else {
         setLoading(false)
-        Toast.show(response.error.message, {
-          duration: Toast.durations.LONG,
-          position: Toast.positions.BOTTOM,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 0
-        });
+        showToastMessage(response.error.message);
       }
     } catch (error) {
       console.log(error)
       setLoading(false)
-      Toast.show("Problemas al enviar o recibir los datos", {
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        shadow: true,
-        animation: true,
-        hideOnPress: true,
-        delay: 0
-      });
+      showToastMessage("Problemas al enviar o recibir los datos");
     }
     setIsFetching(false)
   }

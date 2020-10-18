@@ -7,6 +7,9 @@ import {
   PaymentScreen,
   DetailsScreen,
   AccountScreen,
+  UpdateProfile,
+  TestWebView,
+  ThankYouPage
 } from "../screens";
 import { colors } from '../constants'
 const HomeStack = createStackNavigator();
@@ -42,6 +45,29 @@ function ShoppingCartStackScreen() {
           headerTitleStyle: { fontWeight: "bold" },
         }}
         name='payment' component={PaymentScreen} />
+      <ShoppingCartStack.Screen 
+        options={{
+          headerStyle: {
+            backgroundColor: colors.tabIconSelected,
+          },
+          headerTintColor: "#fff",
+          headerTitleAlign: "center",
+          headerTitle:'Realiza tu pago',
+          headerTitleStyle: { fontWeight: "bold" },
+        }}
+        name='webview' component={TestWebView} />
+      <ShoppingCartStack.Screen 
+        options={{
+          headerStyle: {
+            backgroundColor: colors.tabIconSelected,
+          },
+          headerTintColor: "#fff",
+          headerTitleAlign: "center",
+          headerTitle:'Factura',
+          headerLeft:null,
+          headerTitleStyle: { fontWeight: "bold" },
+        }}
+        name='thanks' component={ThankYouPage} />
     </ShoppingCartStack.Navigator>
   );
 }
@@ -61,7 +87,20 @@ function ProfileStackScreen() {
           headerTitle:'Perfil de usuario',
           headerTitleStyle: { fontWeight: "bold" },
         }}
-        name="Profile" component={AccountScreen} />
+        name="Profile" component={AccountScreen} 
+      />
+       <ProfileStack.Screen 
+        options={{
+          headerStyle: {
+            backgroundColor: colors.tabIconSelected,
+          },
+          headerTintColor: "#fff",
+          headerTitleAlign: "center",
+          headerTitle:'Editar Usuario',
+          headerTitleStyle: { fontWeight: "bold" },
+        }}
+        name="UpdateProfile" component={UpdateProfile} 
+      />
     </ProfileStack.Navigator>
   );
 }

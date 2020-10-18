@@ -9,7 +9,7 @@ export default function ButtonBottom(props){
             <TouchableOpacity 
             style={[
                 {backgroundColor: Colors.tabIconSelected, height: '100%', width:'90%', 
-                borderRadius:50, justifyContent:'center', alignItems:'center'}, props.style]}
+                borderRadius:10, justifyContent:'center', alignItems:'center'}, props.style]}
                 onPress={props.onPress}
             >
                 <Text style= {{color:'white', fontWeight:'bold'}}>{props.text}</Text>
