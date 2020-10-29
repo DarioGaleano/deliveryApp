@@ -1,34 +1,304 @@
 {
-    "items":[
+  "orders": [
+    {
+      "__v": 0,
+      "_id": "5f8c90947addb8005cb95a90",
+      "created_at": "2020-10-18T18:59:32",
+      "payment": {
+        "date": "2020-10-18T18:59:58",
+        "payer": {
+          "address": {
+            "country_code": "US"
+          },
+          "email_address": "oliverogero-buyer@gmail.com",
+          "name": {
+            "given_name": "test",
+            "surname": "buyer"
+          },
+          "payer_id": "HPD9CLR3VVDDS"
+        },
+        "ref": "55406688E3401631A"
+      },
+      "products": [
         {
-          "id":1,
-          "name":"Salsa",
-          "price": "1234"
+          "_id": "5f8c90947addb8005cb95a96",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d85f1328ac04c0f195c8",
+            "category": "Bebidas",
+            "created_at": "2020-10-16T13:29:03",
+            "description": "Refresco Coca Cola 1Lt",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100469623.jpg",
+            "name": "Refresco Coca Cola 1Lt",
+            "price": 1.01,
+            "updated_at": "2020-10-16T13:29:03"
+          },
+          "quantity": 2
         },
         {
-          "id":2,
-          "name":"Mayonesa",
-          "price": "456"
+          "_id": "5f8c90947addb8005cb95a97",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d8261328ac04c0f195c7",
+            "category": "Bebidas",
+            "created_at": "2020-10-16T13:28:06",
+            "description": "Refresco Pepsi Cola Lata 355Ml",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100360492.jpg",
+            "name": "Refresco Pepsi Cola Lata 355Ml",
+            "price": 0.8,
+            "updated_at": "2020-10-16T13:28:06"
+          },
+          "quantity": 2
         },
         {
-          "id":3,
-          "name":"Mostaza",
-          "price": "789"
-        },
-        {
-          "id":4,
-          "name":"Oreo",
-          "price": "012"
-        },
-        {
-          "id":5,
-          "name":"Fructus",
-          "price": "345"
-        },
-        {
-          "id":6,
-          "name":"Adobo",
-          "price": "678"
+          "_id": "5f8c90947addb8005cb95a98",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d6dc1328ac04c0f195c6",
+            "category": "Viveres",
+            "created_at": "2020-10-16T13:22:36",
+            "description": "Tris Tras Chocolate Paquete 300Gr",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100040940.jpg",
+            "name": "Tris Tras Chocolate Paquete 300Gr",
+            "price": 2.86,
+            "updated_at": "2020-10-16T13:22:36"
+          },
+          "quantity": 2
         }
-    ]
+      ],
+      "shipping": {
+        "address": "Av bolivar 1",
+        "name": "Dario Galeano"
+      },
+      "status": "approved",
+      "totalAmount": 9.34,
+      "updated_at": "2020-10-18T18:59:58",
+      "user": "5f8a041672c1b6005c199bae"
+    },
+    {
+      "__v": 0,
+      "_id": "5f8c90947addb8005cb95a91",
+      "created_at": "2020-10-18T18:59:32",
+      "payment": {
+        "date": "2020-10-18T18:59:58",
+        "payer": {
+          "address": {
+            "country_code": "US"
+          },
+          "email_address": "oliverogero-buyer@gmail.com",
+          "name": {
+            "given_name": "test",
+            "surname": "buyer"
+          },
+          "payer_id": "HPD9CLR3VVDDS"
+        },
+        "ref": "55406688E3401631A"
+      },
+      "products": [
+        {
+          "_id": "5f8c90947addb8005cb95a96",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d85f1328ac04c0f195c8",
+            "category": "Bebidas",
+            "created_at": "2020-10-16T13:29:03",
+            "description": "Refresco Coca Cola 1Lt",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100469623.jpg",
+            "name": "Refresco Coca Cola 1Lt",
+            "price": 1.01,
+            "updated_at": "2020-10-16T13:29:03"
+          },
+          "quantity": 2
+        },
+        {
+          "_id": "5f8c90947addb8005cb95a97",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d8261328ac04c0f195c7",
+            "category": "Bebidas",
+            "created_at": "2020-10-16T13:28:06",
+            "description": "Refresco Pepsi Cola Lata 355Ml",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100360492.jpg",
+            "name": "Refresco Pepsi Cola Lata 355Ml",
+            "price": 0.8,
+            "updated_at": "2020-10-16T13:28:06"
+          },
+          "quantity": 2
+        },
+        {
+          "_id": "5f8c90947addb8005cb95a98",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d6dc1328ac04c0f195c6",
+            "category": "Viveres",
+            "created_at": "2020-10-16T13:22:36",
+            "description": "Tris Tras Chocolate Paquete 300Gr",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100040940.jpg",
+            "name": "Tris Tras Chocolate Paquete 300Gr",
+            "price": 2.86,
+            "updated_at": "2020-10-16T13:22:36"
+          },
+          "quantity": 2
+        }
+      ],
+      "shipping": {
+        "address": "Av bolivar 1",
+        "name": "Dario Galeano"
+      },
+      "status": "approved",
+      "totalAmount": 15.10,
+      "updated_at": "2020-10-18T18:59:58",
+      "user": "5f8a041672c1b6005c199bae"
+    },
+    {
+      "__v": 0,
+      "_id": "5f8c90947addb8005cb95a92",
+      "created_at": "2020-10-18T18:59:32",
+      "payment": {
+        "date": "2020-10-18T18:59:58",
+        "payer": {
+          "address": {
+            "country_code": "US"
+          },
+          "email_address": "oliverogero-buyer@gmail.com",
+          "name": {
+            "given_name": "test",
+            "surname": "buyer"
+          },
+          "payer_id": "HPD9CLR3VVDDS"
+        },
+        "ref": "55406688E3401631A"
+      },
+      "products": [
+        {
+          "_id": "5f8c90947addb8005cb95a96",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d85f1328ac04c0f195c8",
+            "category": "Bebidas",
+            "created_at": "2020-10-16T13:29:03",
+            "description": "Refresco Coca Cola 1Lt",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100469623.jpg",
+            "name": "Refresco Coca Cola 1Lt",
+            "price": 1.01,
+            "updated_at": "2020-10-16T13:29:03"
+          },
+          "quantity": 2
+        },
+        {
+          "_id": "5f8c90947addb8005cb95a97",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d8261328ac04c0f195c7",
+            "category": "Bebidas",
+            "created_at": "2020-10-16T13:28:06",
+            "description": "Refresco Pepsi Cola Lata 355Ml",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100360492.jpg",
+            "name": "Refresco Pepsi Cola Lata 355Ml",
+            "price": 0.8,
+            "updated_at": "2020-10-16T13:28:06"
+          },
+          "quantity": 2
+        },
+        {
+          "_id": "5f8c90947addb8005cb95a98",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d6dc1328ac04c0f195c6",
+            "category": "Viveres",
+            "created_at": "2020-10-16T13:22:36",
+            "description": "Tris Tras Chocolate Paquete 300Gr",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100040940.jpg",
+            "name": "Tris Tras Chocolate Paquete 300Gr",
+            "price": 2.86,
+            "updated_at": "2020-10-16T13:22:36"
+          },
+          "quantity": 2
+        }
+      ],
+      "shipping": {
+        "address": "Av bolivar 1",
+        "name": "Dario Galeano"
+      },
+      "status": "approved",
+      "totalAmount": 35.00,
+      "updated_at": "2020-10-18T18:59:58",
+      "user": "5f8a041672c1b6005c199bae"
+    },
+    {
+      "__v": 0,
+      "_id": "5f8c90947addb8005cb95a93",
+      "created_at": "2020-10-18T18:59:32",
+      "payment": {
+        "date": "2020-10-18T18:59:58",
+        "payer": {
+          "address": {
+            "country_code": "US"
+          },
+          "email_address": "oliverogero-buyer@gmail.com",
+          "name": {
+            "given_name": "test",
+            "surname": "buyer"
+          },
+          "payer_id": "HPD9CLR3VVDDS"
+        },
+        "ref": "55406688E3401631A"
+      },
+      "products": [
+        {
+          "_id": "5f8c90947addb8005cb95a93",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d85f1328ac04c0f195c8",
+            "category": "Bebidas",
+            "created_at": "2020-10-16T13:29:03",
+            "description": "Refresco Coca Cola 1Lt",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100469623.jpg",
+            "name": "Refresco Coca Cola 1Lt",
+            "price": 1.01,
+            "updated_at": "2020-10-16T13:29:03"
+          },
+          "quantity": 2
+        },
+        {
+          "_id": "5f8c90947addb8005cb95a97",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d8261328ac04c0f195c7",
+            "category": "Bebidas",
+            "created_at": "2020-10-16T13:28:06",
+            "description": "Refresco Pepsi Cola Lata 355Ml",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100360492.jpg",
+            "name": "Refresco Pepsi Cola Lata 355Ml",
+            "price": 0.8,
+            "updated_at": "2020-10-16T13:28:06"
+          },
+          "quantity": 2
+        },
+        {
+          "_id": "5f8c90947addb8005cb95a98",
+          "product": {
+            "__v": 0,
+            "_id": "5f89d6dc1328ac04c0f195c6",
+            "category": "Viveres",
+            "created_at": "2020-10-16T13:22:36",
+            "description": "Tris Tras Chocolate Paquete 300Gr",
+            "image": "https://tucentralonline.com/distrito-capital-06/wp-content/uploads/sites/2/2020/06/100040940.jpg",
+            "name": "Tris Tras Chocolate Paquete 300Gr",
+            "price": 2.86,
+            "updated_at": "2020-10-16T13:22:36"
+          },
+          "quantity": 2
+        }
+      ],
+      "shipping": {
+        "address": "Av bolivar 1",
+        "name": "Dario Galeano"
+      },
+      "status": "approved",
+      "totalAmount": 6.24,
+      "updated_at": "2020-10-18T18:59:58",
+      "user": "5f8a041672c1b6005c199bae"
+    }
+  ]
 }

@@ -4,12 +4,13 @@ import ModalSelector from "react-native-modal-selector";
 import { Loader } from '../components'
 import { userServices } from '../services'
 import WebView from 'react-native-webview'
-import { urls } from '../constants/'
+import { urls } from '../constants'
 import { BadgeContext } from '../context'
-export default function TestWebView({route, navigation}){
 
-    const [loading, setLoading]=useState(false)
-    const { Decrement } = useContext(BadgeContext)
+export default function WebViewPayPal({route, navigation}){
+
+    const [loading, setLoading]=useState(true)
+    const { RemoveAll } = useContext(BadgeContext)
 
     const onMessage = (event) =>{
         const data=JSON.parse(event.data)
@@ -20,10 +21,7 @@ export default function TestWebView({route, navigation}){
         }
         if(data.type==='response'){
             if(data.status===200){
-                console.log(data.state)
-                let quantity=0;
-                data.state.items.forEach(item => quantity=quantity+item.quantity)
-                Decrement({number:quantity})
+                RemoveAll();
                 navigation.navigate('thanks', { paymentType:route.params.paymentType, orderId:data.state.orderId })
             }
             if(data.status===400){

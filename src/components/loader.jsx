@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   activityIndicatorWrapper: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     height: "100" + "%",
     width: "100" + "%",
     display: 'flex',

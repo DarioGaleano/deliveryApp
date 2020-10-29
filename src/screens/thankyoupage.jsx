@@ -36,7 +36,6 @@ export default function ThankyouPage({route, navigation}){
                     return;
                   } else {
                     console.log({order:response})
-                    await AsyncStorage.setItem('orderId', JSON.stringify(route.params.orderId))
                     setName(response.shipping.name)
                     setAdress(response.shipping.address)
                     setRef(response.payment.ref)
@@ -111,6 +110,7 @@ export default function ThankyouPage({route, navigation}){
             <View style={{height:50, width:"100%", justifyContent:"center"}}>
                 <ButtonBottom text={"Finalizar"}
                     style={{width:"80%", height:40, justifyContent:"center", alignitems:"center", }}
+                    onPress={() => navigation.popToTop()}
                 />
             </View>
             </>

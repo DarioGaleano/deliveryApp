@@ -10,12 +10,13 @@ import DetailsScreen from './details-screen'
 //Shoping Cart
 import ShoppinCartScreen from './shopping-cart-screen'
 import PaymentScreen from './payment-screen'
-import TestWebView from './testWebView'
+import WebViewPayPal from './web-view-paypal'
 import ThankYouPage from './thankyoupage'
 //profile
 import AccountScreen from './account-screen'
 import UpdateProfile from './updateProfile'
-
+import OrderScreen from './orders-screen'
+import OrderDetails from './order-details'
 export {
     SplashScreen,
     SingInScreen,
@@ -26,8 +27,10 @@ export {
     SearchScreen,
     ShoppinCartScreen,
     PaymentScreen,
+    WebViewPayPal,
     AccountScreen,
     UpdateProfile,
-    TestWebView,
+    OrderScreen,
+    OrderDetails,
     ThankYouPage
 }

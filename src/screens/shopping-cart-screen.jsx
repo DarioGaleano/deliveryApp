@@ -96,15 +96,18 @@ export default function ShoppinCartScreen({ route, navigation }) {
         }}
       >
         <View style={{ width: "30%", height: "70%" }}>
+          { 
+         
           <Image
             style={{ width: "100%", height: "100%" }}
             resizeMode={"contain"}
-            source={require("../../assets/images/shopping-cart.png")}
+            source={ products.length===0? require("../../assets/images/shopping-cart.png"):require("../../assets/images/shopping-cart-2.png")}
           />
+          }
         </View>
         <View style={{ width: "70%", height: "70%", padding: 10 }}>
           <View>
-            <Text>Total a pagar: {formatAmount(total)}</Text>
+            <Text>{`Total a pagar: $${formatAmount(total)}`}</Text>
           </View>
         </View>
       </View>

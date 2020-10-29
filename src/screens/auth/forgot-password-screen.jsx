@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { FormValidator } from '../../helpers'
 import { Ionicons } from "@expo/vector-icons";
+import { Title } from '../../components'
 
 
 
@@ -79,9 +80,7 @@ export default function ForgotPasswordScreen(props){
       <View style={styles.container}>
          <ScrollView>
           <KeyboardAvoidingView >
-            <View style={{ width: '100%', height: 100, alignItems: 'center', justifyContent: 'center', }}>
-              <Text>Market Place</Text>
-            </View>
+            <Title />
             <View style={{  width: '100%', height: 360, justifyContent:"center", alignItems:"center" }}>
               <TextInput
                 style={styles.input}
@@ -146,7 +145,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fbd30a",
+    backgroundColor: "tomato",
     borderRadius: 10,
     marginTop:10
   },
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontWeight: "bold",
-    color: "blue"
+    color: "#FFF"
   },
   inputPassword: {
     paddingLeft: 10,

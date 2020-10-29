@@ -11,7 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Loader, ModalPopUp } from '../../components'
+import { Loader, ModalPopUp, Title } from '../../components'
 import { colors } from '../../constants'
 import { userServices } from "../../services"
 import { AuthContext } from '../../context'
@@ -103,17 +103,9 @@ export default function LoginScreen({route, navigation}) {
     <View style={styles.container}>
       <ScrollView>
       <KeyboardAvoidingView >
-
-      <View
-        style={{
-          height: 100,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-          <Text>Market Place</Text>
-      </View>
-
+      
+      <Title/>
+     
       <View
         style={{
           width: "100%",
@@ -226,7 +218,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.tabIconSelected,
+    backgroundColor: "tomato",
     borderRadius: 10,
     marginBottom: 5,
   },
@@ -235,7 +227,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.tabIconSelected,
+    backgroundColor: "tomato",
     borderRadius: 10,
     marginTop: 5,
   },
@@ -245,7 +237,7 @@ const styles = StyleSheet.create({
     height: 40,
   },
   forgotPasswordText: {
-    color: "blue",
+    color: colors.tabIconSelected,
     textDecorationLine: "underline",
   },
   textButton: {
@@ -253,7 +245,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   conditionsText: {
-    color: "blue",
+    color: colors.tabIconSelected,
     textDecorationLine: "underline",
   },
   registerSection: {

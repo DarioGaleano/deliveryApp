@@ -5,6 +5,7 @@ import { Badge } from 'react-native-elements';
 import { productServices } from '../services'
 import { shoppingCartServices } from '../services'
 import { BadgeContext } from '../context'
+import { colors } from "../constants"
 
 export default function HomeScreen({ route, navigation }) { 
 
@@ -101,7 +102,6 @@ export default function HomeScreen({ route, navigation }) {
             console.log('error1', response.error.message);
             return;
           } else {
-            console.log('categorys', response)
             let i=0;
             let array=[]
             array.push({
@@ -217,7 +217,7 @@ export default function HomeScreen({ route, navigation }) {
             <Badge 
               value={item.name}
               textStyle={{fontWeight:"bold"}}
-              badgeStyle={{ paddingHorizontal:10, height:50, marginHorizontal:10, backgroundColor:active===item.index? 'red':'green',}}
+              badgeStyle={{ paddingHorizontal:10, height:50, marginHorizontal:10, backgroundColor:active===item.index? colors.tabIconSelected:'tomato',}}
               onPress={() => { 
                 setActive(item.index); 
                 dispatch({type:"removeAll"})

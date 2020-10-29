@@ -1,6 +1,6 @@
 "use strict";
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, ToastAndroid, AsyncStorage } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, ToastAndroid, AsyncStorage, } from "react-native";
 import ModalSelector from "react-native-modal-selector";
 import { Loader } from '../components'
 import { userServices } from '../services'
@@ -152,17 +152,7 @@ export default function UpdateProfile ({ route, navigation }) {
 
   return (
     
-    <ScrollView contentContainerStyle={styles.container}>
-      <View
-        style={{
-          height:70,
-          alignItems: "center",
-          justifyContent: "center"
-        }}
-      >
-        <Text>Market Place</Text>
-      </View>
-      <View style={{ alignItems: "center", width: '100%',justifyContent: 'space-around' }}>
+      <ScrollView contentContainerStyle={{ alignItems: "center", width: '100%', flex:1, paddingTop:50 }}>
       <TextInput
           style={styles.input}
           textContentType={"emailAddress"}
@@ -232,15 +222,13 @@ export default function UpdateProfile ({ route, navigation }) {
           />
           { errorPhoneNumber===''? null : <Text style={{fontSize:12, color:"tomato", width:"80%", paddingLeft:10}}>{errorPhoneNumber}</Text> }
         <View style={{ width: "100%", alignItems: "center", paddingTop:20 }}>
-        <TouchableOpacity style={styles.sendButton} onPress={register}>
-          <Text style={styles.textButton}>Actualizar</Text>
-        </TouchableOpacity>
-      </View>
-      </View>
-      <Loader loading={loading} />
-      
+          <TouchableOpacity style={styles.sendButton} onPress={register}>
+            <Text style={styles.textButton}>Actualizar</Text>
+          </TouchableOpacity>
+        </View>
+        <Loader loading={loading} />
       </ScrollView>
-  );
+    );
 }
 
 const styles = StyleSheet.create({
@@ -253,7 +241,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fbd30a",
+    backgroundColor: "tomato",
     borderRadius: 10
   },
   input: {
@@ -267,6 +255,6 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontWeight: "bold",
-    color: "blue"
+    color: "#FFF"
   },
 });

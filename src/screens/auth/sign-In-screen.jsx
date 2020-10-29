@@ -2,9 +2,10 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView, ToastAndroid } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Loader } from '../../components'
+import { Loader, Title } from '../../components'
 import { userServices } from '../../services'
 import { filterNumber, onBlurEmail, FormValidator } from '../../helpers'
+import { colors } from '../../constants'
 
 export default function SignInScreen (props) { 
 
@@ -166,20 +167,7 @@ export default function SignInScreen (props) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View
-        style={{
-          height:70,
-          alignItems: "center",
-          justifyContent: "center"
-        }}
-      >
-      { /*<Image
-          style={styles.logo}
-          source={require("../assets/images/logo-remeny.png")}
-          />*/
-          <Text>Market Place</Text>
-      }
-      </View>
+      <Title/>
       <View style={{ alignItems: "center", width: '100%', justifyContent: 'space-around'}}>
         <TextInput
           style={styles.input}
@@ -302,7 +290,7 @@ export default function SignInScreen (props) {
         style={{
           alignItems: "center",
           justifyContent: "center",
-          paddingTop:20
+          paddingVertical:20
         }}
       >
         <Text style={{ color: "#40434E" }}>Al continuar esta aceptando</Text>
@@ -322,7 +310,7 @@ export default function SignInScreen (props) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    alignItems: "center"
+    paddingHorizontal:25
   },
   logo: {
     width: 100,
@@ -335,12 +323,12 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#fbd30a",
+    backgroundColor: "tomato",
     borderRadius: 10
   },
   input: {
     paddingLeft: 10,
-    width: '80%',
+    width: '100%',
     height: 40,
     borderColor: "#a4a4a4",
     borderWidth: 1,
@@ -355,7 +343,7 @@ const styles = StyleSheet.create({
   },
   textButton: {
     fontWeight: "bold",
-    color: "blue"
+    color: "#FFF"
   },
   pickers: {
     width: '80%',
@@ -384,7 +372,7 @@ const styles = StyleSheet.create({
   phoneView: {
     height: 40,
     alignItems: "center",
-    width: '80%',
+    width: '100%',
     justifyContent: "center",
     flexDirection: "row",
   },
@@ -416,7 +404,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   viewPasswordInput: {
-    width: '80%',
+    width: '100%',
     flexDirection: "row",
     borderColor: "#a4a4a4",
     borderWidth: 1,
@@ -435,7 +423,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   conditionsText: {
-    color: "blue",
+    color: colors.tabIconSelected,
     textDecorationLine: "underline"
   },
 });

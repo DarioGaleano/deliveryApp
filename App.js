@@ -119,6 +119,9 @@ function App() {
     Decrement: async({number}) => {
       badgeDispatch({type: "DECREMENT", number: number})
     },
+    RemoveAll: async () => {
+      badgeDispatch({type:"REMOVEALL"})
+    },
     SetQuantity: async({quantity}) => {
       badgeDispatch({type:"SETSHOPINGCART", number:quantity})
     }
@@ -197,7 +200,7 @@ function App() {
                                   marginLeft:2,
                                   zIndex:0,
                                   borderRadius:10,
-                                  backgroundColor: 'red'
+                                  backgroundColor: 'tomato'
                                 }
                               }
                               Hidden={stateBadge.number===0}
@@ -213,7 +216,7 @@ function App() {
             })}
             tabBarOptions={{
               activeTintColor:'tomato',
-              inactiveTintColor: 'gray',
+              inactiveTintColor: colors.tabIconSelected,
               labelStyle:{
                 marginBottom:5,
                 marginTop:0

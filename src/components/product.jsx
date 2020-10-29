@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Image, AsyncStorage, ToastAndroid, Alert } from "react-native";
 import Loader from './loader'
 import {Ionicons} from '@expo/vector-icons'
-import Colors from '../constants/Colors';
+import { colors } from '../constants';
 import { shoppingCartServices } from '../services'
 import formatAmount from '../helpers/formatAmount'
 import { BadgeContext } from '../context'
@@ -99,7 +99,7 @@ export default function Product(props) {
     console.log(props.id)
     Alert.alert(
       'Eliminar producto',
-      `Esta seguro de eliminar ${props.name} de su carrito de compras?`,
+      `Esta seguro de eliminar ${props.name} (${count}) de su carrito de compras?`,
       [
         {
           text: 'Cancel',
@@ -160,7 +160,7 @@ export default function Product(props) {
                             <Ionicons
                               name={"ios-remove"}
                               size={30}
-                              color={"gray"}  
+                              color={"tomato"}  
                             />
                           </TouchableOpacity>
                           
@@ -173,7 +173,7 @@ export default function Product(props) {
                         <Ionicons
                           name={"ios-add"}
                           size={30}
-                          color={"gray"}  
+                          color={colors.tabIconSelected}  
                         />
                       </TouchableOpacity>
                     </View>
@@ -193,7 +193,7 @@ export default function Product(props) {
                 <Ionicons
                   name={"ios-trash"}
                   size={30}
-                  color={"gray"}  
+                  color={"tomato"}  
                 />
               </TouchableOpacity>
             </View>
@@ -231,7 +231,7 @@ const styles= StyleSheet.create({
 
     },
     buttom:{
-        backgroundColor: Colors.tabIconSelected,
+        backgroundColor: colors.tabIconSelected,
         width: '100%',
         height: '20%',
         justifyContent: 'center',

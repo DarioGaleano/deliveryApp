@@ -23,7 +23,8 @@ const urls = {
     //Payment
     payment:`${base}/view/payment`,
     //Order
-    getOrder:`${base}/getorder`
+    getOrder:`${base}/getorder`,
+    getOrders:`${base}/getorders`
 }
 
 export default urls
