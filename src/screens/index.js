@@ -1,36 +1,29 @@
-import SplashScreen from './splash-screen'
-//Auth
-import LoginScreen from './auth/login-screen'
-import ForgotPasswordScreen from './auth/forgot-password-screen'
-import SingInScreen from './auth/sign-In-screen'
-//Home
-import HomeScreen from './home-screen'
-import SearchScreen from './search-screen'
-import DetailsScreen from './details-screen'
-//Shoping Cart
-import ShoppinCartScreen from './shopping-cart-screen'
-import PaymentScreen from './payment-screen'
-import WebViewPayPal from './web-view-paypal'
-import ThankYouPage from './thankyoupage'
-//profile
-import AccountScreen from './account-screen'
-import UpdateProfile from './updateProfile'
-import OrderScreen from './orders-screen'
-import OrderDetails from './order-details'
+import AccountScreen from './account-screen';
+import ForgotPasswordScreen from './auth/forgot-password-screen';
+import HomeScreen from './home-screen';
+import LoginScreen from './auth/login-screen';
+import OrderDetails from './order-details';
+import OrderScreen from './orders-screen';
+import PagoMovilScreen from './pago-movil-screen';
+import PaymentScreen from './payment-screen';
+import ShoppinCartScreen from './shopping-cart-screen';
+import SingUpScreen from './auth/sign-up-screen';
+import SplashScreen from './splash-screen';
+import ThankYouPage from './thankyoupage';
+import UpdateProfile from './updateProfile';
+
 export {
-    SplashScreen,
-    SingInScreen,
-    LoginScreen,
-    ForgotPasswordScreen,
-    HomeScreen,
-    DetailsScreen,
-    SearchScreen,
-    ShoppinCartScreen,
-    PaymentScreen,
-    WebViewPayPal,
-    AccountScreen,
-    UpdateProfile,
-    OrderScreen,
-    OrderDetails,
-    ThankYouPage
-}
+	AccountScreen,
+	ForgotPasswordScreen,
+	HomeScreen,
+	LoginScreen,
+	OrderDetails,
+	OrderScreen,
+	PagoMovilScreen,
+	PaymentScreen,
+	SingUpScreen,
+	ShoppinCartScreen,
+	SplashScreen,
+	ThankYouPage,
+	UpdateProfile,
+};

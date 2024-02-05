@@ -1,8 +1,7 @@
-import {createContext} from 'react';
+import { createContext } from 'react';
 
 const AuthContext = createContext();
 const BadgeContext = createContext();
-export{
-    AuthContext,
-    BadgeContext
-}
+const ModalContext = createContext();
+
+export { AuthContext, BadgeContext, ModalContext };

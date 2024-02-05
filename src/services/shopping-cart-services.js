@@ -1,101 +1,100 @@
-import { urls } from "../constants";
-import { AsyncStorage } from 'react-native'
+import { base } from '../constants';
 
-const getProductShoppingCart = async() => {
-    let request = await fetch(urls.getProductShoppingCart, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
-        },
-      });
-      const response = await request.json();
-      return{
-          status: request.status,
-          response
-      }
-
-}
-const addProductShoppingCart = async ({ id, count }) => {
-  const request = await fetch(urls.addProductShoppingCart, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
-    },
-    body: JSON.stringify({
-      product: id,
-      quantity: count,
-    }),
-  });
-  const response = await request.json();
-  return {
-    status: request.status,
-    response,
-  };
+const getProductShoppingCart = async ({ token }) => {
+	let request = await fetch(`${base}/getproductshoppingcart`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	const response = await request.json();
+	return {
+		status: request.status,
+		response,
+	};
 };
 
-const incrementProductShoppingCart = async ({ id }) => {
-  const request = await fetch(urls.incrementProductShoppingCart, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
-    },
-    body: JSON.stringify({
-      item: id,
-    }),
-  });
-  const response = await request.json();
-  return {
-    status: request.status,
-    response,
-  };
+const addProductShoppingCart = async ({ id, count, token }) => {
+	const request = await fetch(`${base}/addproductshoppingcart`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			product: id,
+			quantity: count,
+		}),
+	});
+	const response = await request.json();
+	return {
+		status: request.status,
+		response,
+	};
 };
 
-const decrementProductShoppingCart = async ({ id }) => {
-  const request = await fetch(urls.decrementProductShoppingCart, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
-    },
-    body: JSON.stringify({
-      item: id,
-    }),
-  });
-  const response = await request.json();
-  return {
-    status: request.status,
-    response,
-  };
+const incrementProductShoppingCart = async ({ id, token }) => {
+	const request = await fetch(`${base}/incrementproductshoppingcart`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			item: id,
+		}),
+	});
+	const response = await request.json();
+	return {
+		status: request.status,
+		response,
+	};
 };
 
-const removeProductShoppingCart = async ({ id }) => {
-  const request = await fetch(urls.removeProductShoppingCart, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${JSON.parse(await AsyncStorage.getItem('token'))}`,
-    },
-    body: JSON.stringify({
-      item: id,
-    }),
-  });
+const decrementProductShoppingCart = async ({ id, token }) => {
+	const request = await fetch(`${base}/decrementproductshoppingcart`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			item: id,
+		}),
+	});
+	const response = await request.json();
+	return {
+		status: request.status,
+		response,
+	};
+};
 
-  const response = await request.json();
-  return {
-    status: request.status,
-    response,
-  };
+const removeProductShoppingCart = async ({ id, token }) => {
+	const request = await fetch(`${base}/removeproductshoppingcart`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			item: id,
+		}),
+	});
+
+	const response = await request.json();
+	return {
+		status: request.status,
+		response,
+	};
 };
 
 const shoppingCartServices = Object.freeze({
-    getProductShoppingCart,
-    addProductShoppingCart,
-    incrementProductShoppingCart,
-    decrementProductShoppingCart,
-    removeProductShoppingCart,
+	getProductShoppingCart,
+	addProductShoppingCart,
+	incrementProductShoppingCart,
+	decrementProductShoppingCart,
+	removeProductShoppingCart,
 });
 
 export default shoppingCartServices;
